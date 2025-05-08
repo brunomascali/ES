@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/users")
@@ -25,11 +24,6 @@ public class UserController {
     @GetMapping("/{id}")
     public Optional<User> getUserById(@PathVariable long id) {
         return userRepository.findById(id);
-    }
-
-    @PostMapping("")
-    public User createUser(@RequestBody User user) {
-        return userRepository.save(user);
     }
 
     @DeleteMapping("/{id}")
