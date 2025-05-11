@@ -1,35 +1,34 @@
 import { useEffect, useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import Signup from './Components/Signup';
-import Login from './Components/Login';
+import Unlogged from './Pages/LoggedOut';
+import LoggedIn from './Pages/LoggedIn';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(String);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [user, setUser] = useState<string>('');
+  
   useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (user) {
-      const userData = JSON.parse(user);
-      setIsLoggedIn(true);
-      setUser(userData.name);
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUser(userData.name);
+        setIsLoggedIn(true);
+      } catch (e) {
+        localStorage.removeItem('user');
+        setIsLoggedIn(false);
+        setUser('');
+      }
     }
   }, []);
   
   return (
     <div className="App">
-      {isLoggedIn && user ? (
-        <>
-        <h1>Bem vindo {user}</h1>
-        <button onClick={() => {
-          localStorage.removeItem('user');
-          setIsLoggedIn(false);
-        }}>Sair</button>
-        </>
+      {isLoggedIn ? (
+        <LoggedIn user={user} setIsLoggedIn={setIsLoggedIn} setUser={setUser} />
       ) : (
-        <>
-          <Signup />
-          <Login />
-        </>
+        <Unlogged setIsLoggedIn={setIsLoggedIn} setUser={setUser} />
       )}
     </div>
   );
