@@ -1,39 +1,11 @@
 import axios from "axios";
 import { useState } from "react";
+import { SignupFormData, validateForm } from "../Utils/SignupFormValidator";
 
-type SignupFormData = {
-    username: string;
-    password: string;
-    confirmPassword: string;
-    email: string;
-    dateOfBirth: string;
-}
 
 type SignupProps = {
     setIsLoggedIn: (isLoggedIn: boolean) => void;
     setUser: (user: string) => void;
-}
-
-function validateForm(formData: SignupFormData): boolean {
-    let errors = [];
-    if (formData.password !== formData.confirmPassword) {
-        errors.push("As senhas não coincidem");
-    }
-    if (!formData.email.endsWith("ufrgs.br")) {
-        errors.push("O email deve ser do domínio ufrgs.br");
-    }
-    if (new Date(formData.dateOfBirth) > new Date()) {
-        errors.push("A data de nascimento não pode ser maior que a data atual");
-    }
-    if (new Date().getFullYear() - new Date(formData.dateOfBirth).getFullYear() < 18) {
-        errors.push("Você deve ter pelo menos 18 anos");
-    }
-    
-    if (errors.length > 0) {
-        alert(errors.join("\n"));
-        return false;   
-    }
-    return true;
 }
 
 export default function Signup({ setIsLoggedIn, setUser }: SignupProps) {
@@ -42,24 +14,14 @@ export default function Signup({ setIsLoggedIn, setUser }: SignupProps) {
     const [confirmPassword, setConfirmPassword] = useState('123');
     const [email, setEmail] = useState('mariadasilva@ufrgs.br');
     const [dateOfBirth, setDateOfBirth] = useState('1990-01-01');
+    const [cpf, setCpf] = useState('12345678901');
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const formData: SignupFormData = {
-            username,
-            password,
-            confirmPassword,
-            email,
-            dateOfBirth
-        };
+        const formData: SignupFormData = { username, password, confirmPassword, email, dateOfBirth, cpf };
         
         if (validateForm(formData)) {
-            const user = {
-                name: username,
-                password,
-                email,
-                dateOfBirth
-            };
+            const user = { name: username, password, email, dateOfBirth, cpf };
             try {
                 const response = await axios.post('http://127.0.0.1:8080/users/create', user);
                 const userData = response.data;
@@ -126,6 +88,18 @@ export default function Signup({ setIsLoggedIn, setUser }: SignupProps) {
                             required
                         />
                         <div className="form-text">Use seu email institucional @ufrgs.br</div>
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="cpf" className="form-label">CPF</label>
+                        <input 
+                            type="text" 
+                            className="form-control"
+                            id="cpf"
+                            placeholder="Digite seu CPF" 
+                            value={cpf} 
+                            onChange={(e) => setCpf(e.target.value)} 
+                            required
+                        />
                     </div>
                     <div className="mb-3">
                         <label htmlFor="dateOfBirth" className="form-label">Data de Nascimento</label>

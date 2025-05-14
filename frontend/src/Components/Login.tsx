@@ -1,22 +1,10 @@
 import axios from "axios";
 import { useState } from "react";
-
-type LoginFormData = {
-    email: string;
-    password: string;
-}
+import { LoginFormData, validateLoginForm } from "../Utils/LoginFormValidator";
 
 type LoginProps = {
     setIsLoggedIn: (isLoggedIn: boolean) => void;
     setUser: (user: string) => void;
-}
-
-function validateLoginForm(formData: LoginFormData): boolean {
-    if (!formData.email.endsWith("ufrgs.br")) {
-        return false;
-    }
-
-    return true;
 }
 
 export default function Login({ setIsLoggedIn, setUser }: LoginProps) {
@@ -25,10 +13,8 @@ export default function Login({ setIsLoggedIn, setUser }: LoginProps) {
 
     const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const loginRequest: LoginFormData = {
-            email,
-            password
-        };
+        const loginRequest: LoginFormData = { email, password };
+
         if (validateLoginForm(loginRequest)) {
             try {
                 const response = await axios.post('http://localhost:8080/login', loginRequest);

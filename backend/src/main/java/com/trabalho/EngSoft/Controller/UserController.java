@@ -55,6 +55,7 @@ public class UserController {
         user.setPassword(signupRequest.getPassword());
         user.setDateOfBirth(dob);
         user.setRoles(Set.of(new Role(2, "USUARIO")));
+        user.setCpf(signupRequest.getCpf());
         userRepository.save(user);
 
         return ResponseEntity.ok().build();

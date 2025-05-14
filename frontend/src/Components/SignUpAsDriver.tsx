@@ -14,18 +14,14 @@ export default function SignUpAsDriver({ setIsDriver }: SignUpAsDriverProps) {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const SignUpAsDriverRequest = {
-            cpf,
-            cnh
-        }
-        console.log(SignUpAsDriverRequest);
+        const SignUpAsDriverRequest = { cpf, cnh }
 
         try {
-            const response = await axios.post('http://127.0.0.1:8080/cnh/validate', SignUpAsDriverRequest);
+            await axios.post('http://127.0.0.1:8080/cnh/validate', SignUpAsDriverRequest);
             setIsDriver(true);
         } catch (error) {
             console.log(error);
-            alert('Erro ao cadastrar motorista');
+            alert('Erro ao cadastrar motorista.');
         }
 
     }
