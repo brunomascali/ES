@@ -34,7 +34,7 @@ public class CNHController {
     public ResponseEntity<?> validateCNH(@RequestBody validateCNHRequest validateCNHRequest) {
         Optional<CNH> cnh = cnhRepository.findByCpf(validateCNHRequest.getCpf());
 
-        if (cnh.isPresent() && Objects.equals(cnh.get().getCpf(), validateCNHRequest.getCpf())) {
+        if (cnh.isPresent() && Objects.equals(cnh.get().getCnh(), validateCNHRequest.getCnh())) {
             Optional<User> user = userRepository.findByCpf(validateCNHRequest.getCpf());
             if (user.isPresent()) {
                 user.get().getRoles().add(new Role(4, "MOTORISTA"));
