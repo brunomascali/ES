@@ -1,4 +1,3 @@
-
 export type SignupFormData = {
     username: string;
     password: string;

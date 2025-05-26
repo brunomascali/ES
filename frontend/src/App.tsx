@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import Unlogged from './Pages/LoggedOut';
-import LoggedIn from './Pages/LoggedIn';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Signup from './Components/Signup';
+import Login from './Components/Login';
+import HomePage from './Components/HomePage';
+import Caronas from './Components/Caronas';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -24,13 +27,23 @@ function App() {
   }, []);
   
   return (
-    <div className="App">
-      {isLoggedIn ? (
-        <LoggedIn user={user} setIsLoggedIn={setIsLoggedIn} setUser={setUser} />
-      ) : (
-        <Unlogged setIsLoggedIn={setIsLoggedIn} setUser={setUser} />
-      )}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {isLoggedIn && (
+          <>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/caronas" element={<Caronas />} />
+          </>
+        )}
+        {!isLoggedIn && (
+          <>
+            <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
+            <Route path="/signup" element={<Signup setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
+          </>
+
+        )}
+      </Routes>
+    </BrowserRouter>
   );
 }
 
