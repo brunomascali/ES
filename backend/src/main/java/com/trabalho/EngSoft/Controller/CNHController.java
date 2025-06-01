@@ -3,6 +3,7 @@ package com.trabalho.EngSoft.Controller;
 import com.trabalho.EngSoft.DTO.validateCNHRequest;
 import com.trabalho.EngSoft.Model.CNH;
 import com.trabalho.EngSoft.Model.Role;
+import com.trabalho.EngSoft.Model.RoleName;
 import com.trabalho.EngSoft.Model.User;
 import com.trabalho.EngSoft.Repository.CNHRepository;
 import com.trabalho.EngSoft.Repository.UserRepository;
@@ -37,7 +38,7 @@ public class CNHController {
         if (cnh.isPresent() && Objects.equals(cnh.get().getCnh(), validateCNHRequest.getCnh())) {
             Optional<User> user = userRepository.findByCpf(validateCNHRequest.getCpf());
             if (user.isPresent()) {
-                user.get().getRoles().add(new Role(4, "MOTORISTA"));
+                user.get().getRoles().add(new Role(4, RoleName.DRIVER));
                 userRepository.save(user.get());
                 return ResponseEntity.ok().build();
             }

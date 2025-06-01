@@ -20,7 +20,6 @@ export default function SignUpAsDriver({ setIsDriver }: SignUpAsDriverProps) {
             await axios.post('http://127.0.0.1:8080/cnh/validate', SignUpAsDriverRequest);
             setIsDriver(true);
         } catch (error) {
-            console.log(error);
             alert('Erro ao cadastrar motorista.');
         }
 

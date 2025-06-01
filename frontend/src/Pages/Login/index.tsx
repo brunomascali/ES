@@ -1,36 +1,23 @@
-import axios from "axios";
+import { useContext } from "react";
+
 import { useState } from "react";
-import logo from "../assets/logo.png";
-import { LoginFormData } from "../Utils/LoginFormValidator";
-import { validateLoginForm } from "../Utils/LoginFormValidator";
+import { AuthContext } from "../../context/Auth";
+import logo from '../../assets/logo.png';
 
-type LoginProps = {
-    setIsLoggedIn: (isLoggedIn: boolean) => void;
-    setUser: (user: string) => void;
-}
+export default function Login() {
+    const context = useContext(AuthContext);
+    const [input, setInput] = useState({ email: 'bruno.mascalivolkmer@inf.ufrgs.br', password: '123' });
 
-export default function Login({ setIsLoggedIn, setUser }: LoginProps) {
-    const [email, setEmail] = useState('mariadasilva@ufrgs.br');
-    const [password, setPassword] = useState('123');
-
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const loginRequest: LoginFormData = { email, password };
-
-        if (validateLoginForm(loginRequest)) {
-            try {
-                const response = await axios.post('http://localhost:8080/login', loginRequest);
-                const userData = response.data;
-                localStorage.setItem('user', JSON.stringify(userData));
-                setUser(userData.name);
-                setIsLoggedIn(true);
-            } catch (error) {
-                console.error(error);
-                alert('Erro ao fazer login. Verifique suas credenciais.');
-            }
-        } else {
-            alert('Email deve ser do domínio ufrgs.br');
+        try {
+            await context.Login(input);
+        } catch (error) {
         }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInput({ ...input, [e.target.name]: e.target.value });
     }
 
     return (
@@ -42,16 +29,17 @@ export default function Login({ setIsLoggedIn, setUser }: LoginProps) {
                             <img src={logo} alt="Logo" className="mb-4" style={{ width: '240px' }} />
                         </div>
                         <h2 className="text-center mb-4">Login</h2>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleLogin}>
                             <div className="mb-3">
                                 <label htmlFor="email" className="form-label">Email</label>
                                 <input
                                     type="email"
                                     className="form-control form-control-lg"
+                                    name="email"
                                     id="email"
                                     placeholder="seu.email@ufrgs.br"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={handleInputChange}
+                                    value={input.email}
                                     required
                                 />
                                 <div className="form-text">Use seu email institucional @ufrgs.br</div>
@@ -61,10 +49,11 @@ export default function Login({ setIsLoggedIn, setUser }: LoginProps) {
                                 <input
                                     type="password"
                                     className="form-control form-control-lg"
+                                    name="password"
                                     id="password"
                                     placeholder="Digite sua senha"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    onChange={handleInputChange}
+                                    value={input.password}
                                     required
                                 />
                             </div>
@@ -81,5 +70,5 @@ export default function Login({ setIsLoggedIn, setUser }: LoginProps) {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};

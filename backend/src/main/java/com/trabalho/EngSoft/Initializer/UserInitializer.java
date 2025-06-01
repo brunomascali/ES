@@ -1,6 +1,7 @@
 package com.trabalho.EngSoft.Initializer;
 
 import com.trabalho.EngSoft.Model.Role;
+import com.trabalho.EngSoft.Model.RoleName;
 import com.trabalho.EngSoft.Model.User;
 import com.trabalho.EngSoft.Repository.RoleRepository;
 import com.trabalho.EngSoft.Repository.UserRepository;
@@ -31,6 +32,11 @@ public class UserInitializer implements CommandLineRunner {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
             LocalDate dob = LocalDate.parse("1990-01-01", formatter);
 
+            Role passengerRole = roleRepository.findByRole(RoleName.PASSENGER)
+                    .orElseThrow(() -> new RuntimeException("Passenger ROLE not found"));
+            Role driverRole = roleRepository.findByRole(RoleName.DRIVER)
+                    .orElseThrow(() -> new RuntimeException("Passenger DRIVER not found"));
+
             // Usuario já cadastrado como motorista
             User driver1 = new User();
             driver1.setName("Joao da Silva");
@@ -38,10 +44,7 @@ public class UserInitializer implements CommandLineRunner {
             driver1.setEmail("joaodasilva@ufrgs.br");
             driver1.setCpf("1");
             driver1.setDateOfBirth(dob);
-            driver1.setRoles(new HashSet<>(List.of(
-                    roleRepository.findByName("PASSAGEIRO"),
-                    roleRepository.findByName("MOTORISTA")
-            )));
+            driver1.setRoles(Set.of(passengerRole, driverRole));
             userRepository.save(driver1);
 
             // Usuario não cadastrado como motorista mas possui CNH
@@ -51,9 +54,7 @@ public class UserInitializer implements CommandLineRunner {
             driver2.setEmail("mariadasilva@ufrgs.br");
             driver2.setCpf("2");
             driver2.setDateOfBirth(dob);
-            driver2.setRoles(new HashSet<>(List.of(
-                    roleRepository.findByName("PASSAGEIRO")
-            )));
+            driver2.setRoles(Set.of(passengerRole));
             userRepository.save(driver2);
 
             // Usuário não cadastrado como motorista e que não possui CNH
@@ -63,9 +64,7 @@ public class UserInitializer implements CommandLineRunner {
             passenger.setEmail("robertodasilva@ufrgs.br");
             passenger.setCpf("3");
             passenger.setDateOfBirth(dob);
-            passenger.setRoles(new HashSet<>(List.of(
-                    roleRepository.findByName("PASSAGEIRO")
-            )));
+            passenger.setRoles(Set.of(passengerRole));
             userRepository.save(passenger);
         }
     }

@@ -1,6 +1,4 @@
-import TopMenu from "./TopMenu";
-
-const Carona = () => {
+export default function RideCard() {
     const vagasDisponiveis = 2;
     const totalVagas = 3;
 
@@ -32,17 +30,6 @@ const Carona = () => {
                 <div className="card-footer text-muted">
                     Postado em 26/05/2025
                 </div>
-            </div>
-        </div>
-    );
-}
-
-export default function Caronas() {
-    return (
-        <div>
-            <TopMenu activePage="caronas" />
-            <div className="container py-5">
-                <Carona />
             </div>
         </div>
     );

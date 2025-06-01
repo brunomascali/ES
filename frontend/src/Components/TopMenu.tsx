@@ -1,6 +1,9 @@
 import logo from "../assets/logo.png";
+import { useContext } from "react";
+import { AuthContext } from "../context/Auth";
 
 export default function TopMenu({ activePage }: { activePage: string }) {
+    const { Logout } = useContext(AuthContext);
 
     return (
         <ul className="nav py-1 px-5 fs-5 justify-content-between" style={{ backgroundColor: '#edeef7' }}>
@@ -21,13 +24,7 @@ export default function TopMenu({ activePage }: { activePage: string }) {
                 </li>
             </div>
             <li className="nav-item" style={{ display: 'flex', alignItems: 'center' }}>
-                <button className="btn btn-lg btn-danger" onClick={
-                    () => {
-                        localStorage.removeItem('user');
-                        // setIsLoggedIn(false);
-                        // setUser('');
-                    }
-                }>Sair</button>
+                <button className="btn btn-lg btn-danger" onClick={Logout}>Sair</button>
             </li>
         </ul>
     );

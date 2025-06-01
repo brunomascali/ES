@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class VerificationRequest {
     private String email;
-    private int verificationCode;
+    private String verificationCode;
 }

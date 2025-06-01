@@ -11,11 +11,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "verificationCode")
+@Table(name = "verification_code")
 public class VerificationCode {
     @Id
-    private String email;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     @Column(nullable = false)
-    private int code;
+    private String code;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

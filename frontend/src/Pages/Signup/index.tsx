@@ -1,61 +1,64 @@
-import axios from "axios";
 import { useState } from "react";
-import logo from "../assets/logo.png";
-import { SignupFormData } from "../Utils/SignupFormValidator";
-import { validateForm } from "../Utils/SignupFormValidator";
+import logo from '../../assets/logo.png';
+import axios from "axios";
 
-type SignupProps = {
-    setIsLoggedIn: (isLoggedIn: boolean) => void;
-    setUser: (user: string) => void;
+type SignupFormData = {
+    username: string;
+    password: string;
+    confirmPassword: string;
+    email: string;
+    cpf: string;
+    dateOfBirth: string;
 }
 
-const SignupErrorModal = ({ error }: { error: string }) => {
-    return (
-        <div className="modal fade" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div className="modal-dialog">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title" id="exampleModalLabel">Modal title</h5>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div className="modal-body">
-                        ...
-                    </div>
-                    <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" className="btn btn-primary">Save changes</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-}
+export default function Signup() {
+    const [input, setInput] = useState<SignupFormData>({
+        username: 'Bruno Mascali Volkmer',
+        password: '123',
+        confirmPassword: '123',
+        email: 'bruno.mascalivolkmer@inf.ufrgs.br',
+        cpf: '12345678901',
+        dateOfBirth: '2000-01-01',
+    });
 
-export default function Signup({ setIsLoggedIn, setUser }: SignupProps) {
-    const [username, setUsername] = useState('Maria da Silva');
-    const [password, setPassword] = useState('123');
-    const [confirmPassword, setConfirmPassword] = useState('123');
-    const [email, setEmail] = useState('mariadasilva@ufrgs.br');
-    const [dateOfBirth, setDateOfBirth] = useState('1990-01-01');
-    const [cpf, setCpf] = useState('12345678901');
+    const validateSignupForm = (input: SignupFormData) => {
+        let errors = [];
+        if (input.password !== input.confirmPassword) {
+            errors.push('As senhas não coincidem');
+        }
+        if (!input.email.endsWith('ufrgs.br')) {
+            errors.push('O email deve ser do domínio ufrgs.br');
+        }
+        if (new Date(input.dateOfBirth) > new Date()) {
+            errors.push('A data de nascimento não pode ser maior que a data atual');
+        }
+        return errors;
+    }
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const formData: SignupFormData = { username, password, confirmPassword, email, dateOfBirth, cpf };
+    const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
 
-        if (validateForm(formData)) {
-            const user = { name: username, password, email, dateOfBirth, cpf };
+        if (validateSignupForm(input)) {
             try {
-                const response = await axios.post('http://127.0.0.1:8080/users/create', user);
-                const userData = response.data;
-                localStorage.setItem('user', JSON.stringify(userData));
-                setUser(userData.name);
-                setIsLoggedIn(true);
-            } catch (error: any) {
-                console.error(error);
-                alert('Erro ao cadastrar usuário: ' + (error.response?.data || 'Erro desconhecido'));
+                const SignupRequest = {
+                    name: input.username,
+                    password: input.password,
+                    email: input.email,
+                    cpf: input.cpf,
+                    dateOfBirth: input.dateOfBirth,
+                }
+                const response = await axios.post('http://127.0.0.1:8080/api/users/create', SignupRequest);
+
+                if (response.status === 200) {
+                    window.location.href = '/';
+                }
+            } catch (error) {
             }
         }
+    }
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInput({ ...input, [e.target.name]: e.target.value });
     }
 
     return (
@@ -67,7 +70,7 @@ export default function Signup({ setIsLoggedIn, setUser }: SignupProps) {
                             <img src={logo} alt="Logo" className="mb-4" style={{ width: '240px' }} />
                         </div>
                         <h2 className="text-center mb-4">Cadastro</h2>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSignup}>
                             <div className="mb-3">
                                 <label htmlFor="username" className="form-label">Nome de usuário</label>
                                 <input
@@ -75,8 +78,8 @@ export default function Signup({ setIsLoggedIn, setUser }: SignupProps) {
                                     className="form-control form-control-lg"
                                     id="username"
                                     placeholder="Digite seu nome de usuário"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
+                                    value={input.username}
+                                    onChange={handleInputChange}
                                     required
                                 />
                             </div>
@@ -87,8 +90,8 @@ export default function Signup({ setIsLoggedIn, setUser }: SignupProps) {
                                     className="form-control form-control-lg"
                                     id="password"
                                     placeholder="Digite sua senha"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    value={input.password}
+                                    onChange={handleInputChange}
                                     required
                                 />
                             </div>
@@ -99,8 +102,8 @@ export default function Signup({ setIsLoggedIn, setUser }: SignupProps) {
                                     className="form-control form-control-lg"
                                     id="confirmPassword"
                                     placeholder="Confirme sua senha"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    value={input.confirmPassword}
+                                    onChange={handleInputChange}
                                     required
                                 />
                             </div>
@@ -111,8 +114,8 @@ export default function Signup({ setIsLoggedIn, setUser }: SignupProps) {
                                     className="form-control form-control-lg"
                                     id="email"
                                     placeholder="seu.email@ufrgs.br"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    value={input.email}
+                                    onChange={handleInputChange}
                                     required
                                 />
                                 <div className="form-text">Use seu email institucional @ufrgs.br</div>
@@ -124,8 +127,8 @@ export default function Signup({ setIsLoggedIn, setUser }: SignupProps) {
                                     className="form-control form-control-lg"
                                     id="cpf"
                                     placeholder="Digite seu CPF"
-                                    value={cpf}
-                                    onChange={(e) => setCpf(e.target.value)}
+                                    value={input.cpf}
+                                    onChange={handleInputChange}
                                     required
                                 />
 
@@ -136,8 +139,8 @@ export default function Signup({ setIsLoggedIn, setUser }: SignupProps) {
                                     type="date"
                                     className="form-control form-control-lg"
                                     id="dateOfBirth"
-                                    value={dateOfBirth}
-                                    onChange={(e) => setDateOfBirth(e.target.value)}
+                                    value={input.dateOfBirth}
+                                    onChange={handleInputChange}
                                     required
                                 />
                                 <div className="form-text">Você deve ter pelo menos 18 anos</div>
@@ -156,4 +159,4 @@ export default function Signup({ setIsLoggedIn, setUser }: SignupProps) {
             </div>
         </div>
     )
-}
+};
