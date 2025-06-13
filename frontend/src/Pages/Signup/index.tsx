@@ -13,10 +13,10 @@ type SignupFormData = {
 
 export default function Signup() {
     const [input, setInput] = useState<SignupFormData>({
-        username: 'Bruno Mascali Volkmer',
+        username: 'João Gabriel Rau Wendt',
         password: '123',
         confirmPassword: '123',
-        email: 'bruno.mascalivolkmer@inf.ufrgs.br',
+        email: 'jgrwendt@inf.ufrgs.br',
         cpf: '12345678901',
         dateOfBirth: '2000-01-01',
     });

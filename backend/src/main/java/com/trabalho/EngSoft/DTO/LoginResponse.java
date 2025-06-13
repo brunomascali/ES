@@ -1,6 +1,5 @@
 package com.trabalho.EngSoft.DTO;
 
-import com.trabalho.EngSoft.Model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

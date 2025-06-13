@@ -1,12 +1,10 @@
 package com.trabalho.EngSoft.Service;
 
-import com.trabalho.EngSoft.Model.VerificationCode;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.Properties;
 
 @Service
