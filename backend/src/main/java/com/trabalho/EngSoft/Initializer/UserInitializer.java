@@ -39,7 +39,7 @@ public class UserInitializer implements CommandLineRunner {
             User driver1 = new User();
             driver1.setName("Bruno Mascali Volkmer");
             driver1.setPassword("123");
-            driver1.setEmail("bmvolkmer@ufrgs.br");
+            driver1.setEmail("bmvolkmer@inf.ufrgs.br");
             driver1.setCpf("11111111111");
             driver1.setDateOfBirth(dob);
             driver1.setRoles(Set.of(passengerRole));

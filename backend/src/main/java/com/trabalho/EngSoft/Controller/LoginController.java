@@ -1,7 +1,7 @@
 package com.trabalho.EngSoft.Controller;
 
-import com.trabalho.EngSoft.DTO.LoginRequest;
-import com.trabalho.EngSoft.DTO.LoginResponse;
+import com.trabalho.EngSoft.DTO.LoginRequestDTO;
+import com.trabalho.EngSoft.DTO.UserDTO;
 import com.trabalho.EngSoft.Model.Role;
 import com.trabalho.EngSoft.Model.User;
 import com.trabalho.EngSoft.Repository.UserRepository;
@@ -21,7 +21,7 @@ public class LoginController {
     private UserRepository userRepository;
 
     @PostMapping("")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
         Optional<User> user = userRepository.findByEmail(loginRequest.getEmail());
 
         if (user.isPresent() && user.get().getPassword().equals(loginRequest.getPassword())) {
@@ -29,7 +29,7 @@ public class LoginController {
                     (Role role) -> role.getRole().toString()
             ).collect(Collectors.toSet());
 
-            LoginResponse loginResponse = new LoginResponse(
+            UserDTO loginResponse = new UserDTO(
                     user.get().getName(),
                     user.get().getEmail(),
                     user.get().getCpf(),

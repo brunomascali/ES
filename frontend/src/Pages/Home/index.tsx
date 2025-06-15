@@ -4,6 +4,8 @@ import { AuthContext } from "../../context/Auth";
 
 export default function Home() {
     const { user } = useContext(AuthContext);
+
+    console.log(user);
     return (
         <div>
             <TopMenu activePage="home" />
@@ -11,7 +13,7 @@ export default function Home() {
                 <h1>Bem-vindo de volta, {user?.name}!</h1>
                 <div className="flex flex-column gap-1">
                     {
-                        !user?.roles.includes("DRIVER") && (
+                        !user!.roles.includes("DRIVER") && (
                             <button
                                 className="btn btn-primary mt-3 w-100"
                                 onClick={() => {

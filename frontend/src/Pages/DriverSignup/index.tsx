@@ -3,8 +3,14 @@ import TopMenu from "../../Components/TopMenu";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/Auth";
 
+interface AlterRoleRequest {
+    email: string;
+    role: "DRIVER" | "PASSENGER";
+    action: "add" | "remove";
+}
+
 export default function DriverSignup() {
-    const { user } = useContext(AuthContext);
+    const { user, setUser } = useContext(AuthContext);
     const [cnh, setCnh] = useState("");
     const [errors, setErrors] = useState<string[]>([]);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -28,18 +34,32 @@ export default function DriverSignup() {
             console.log(errors);
             return;
         }
-        setIsSuccess(true);
         setErrors([]);
+        
+        const validateCnhResponse = await axios.post("http://127.0.0.1:8080/api/cnh/validate", {
+            cnh: cnh,
+            cpf: user!.cpf
+        });
+        
+        if (validateCnhResponse.status === 200) {
+            const alterRoleRequest: AlterRoleRequest = {
+                email: user!.email,
+                role: "DRIVER",
+                action: "add"
+            };
 
-        // const response = await axios.post("http://localhost:8080/api/cnh/validate", {
-        //     cnh: cnh
-        // });
-
-        user?.roles.push("DRIVER");
-        localStorage.setItem("user", JSON.stringify(user));
-        setTimeout(() => {
-            window.location.href = "/";
-        }, 1000);
+            const alterRoleResponse = await axios.put("http://127.0.0.1:8080/api/role", alterRoleRequest);
+            if (alterRoleResponse.status === 200) {
+                setIsSuccess(true);
+                
+                setTimeout(() => {
+                    setUser(alterRoleResponse.data);
+                    localStorage.setItem('user', JSON.stringify(alterRoleResponse.data));
+                    window.location.href = "/";
+                }, 3000);
+            }
+        }
+        
     }
 
     return (

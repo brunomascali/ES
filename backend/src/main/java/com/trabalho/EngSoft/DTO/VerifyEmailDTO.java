@@ -3,7 +3,7 @@ package com.trabalho.EngSoft.DTO;
 import lombok.Data;
 
 @Data
-public class VerificationRequest {
+public class VerifyEmailDTO {
     private String email;
     private String verificationCode;
 }

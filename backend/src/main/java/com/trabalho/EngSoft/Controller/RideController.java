@@ -1,8 +1,8 @@
 package com.trabalho.EngSoft.Controller;
 
 import com.trabalho.EngSoft.Model.User;
-import com.trabalho.EngSoft.DTO.CreateRideRequest;
-import com.trabalho.EngSoft.DTO.AcceptRideRequest;
+import com.trabalho.EngSoft.DTO.CreateRideDTO;
+import com.trabalho.EngSoft.DTO.AcceptRideDTO;
 import com.trabalho.EngSoft.Model.Ride;
 import com.trabalho.EngSoft.Model.Passenger;
 import com.trabalho.EngSoft.Repository.RideRepository;
@@ -52,7 +52,7 @@ public class RideController {
 
     // Cria uma carona a partir do CPF do motorista
     @PostMapping("/create")
-    public ResponseEntity<?> createRide(@RequestBody CreateRideRequest createRequest){
+    public ResponseEntity<?> createRide(@RequestBody CreateRideDTO createRequest){
         Optional<User> user = userRepository.findByCpf(createRequest.getDriverCPF());
 
         if (user.isEmpty())
@@ -89,7 +89,7 @@ public class RideController {
 
     // Requisição de aceitar uma carona por usuário
     @PutMapping("/acceptRide")
-    public ResponseEntity<?> acceptRide(@RequestBody AcceptRideRequest acceptRequest){
+    public ResponseEntity<?> acceptRide(@RequestBody AcceptRideDTO acceptRequest){
         Optional<Ride> rideToAccept = rideRepository.findById(acceptRequest.getRideID());
         Optional<User> userToAccept = userRepository.findByCpf(acceptRequest.getUserCPF());
 

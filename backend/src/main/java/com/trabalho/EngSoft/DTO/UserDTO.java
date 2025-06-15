@@ -1,12 +1,15 @@
 package com.trabalho.EngSoft.DTO;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
-public class SignupRequest {
+@AllArgsConstructor
+public class UserDTO {
     private String name;
-    private String password;
     private String email;
     private String cpf;
-    private String dateOfBirth;
+    private Set<String> roles;
 }

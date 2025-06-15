@@ -9,15 +9,12 @@ export default function AppRoutes() {
     const [isVerified, setIsVerified] = useState(false);
 
     useEffect(() => {
-        console.log("roles: ", user?.roles);
         if (signed) {
             if (!user?.roles.includes('NOT_VERIFIED_USER')) {
                 setIsVerified(true);
             }
         }
     }, [signed, user]);
-
-    console.log(user);
 
     return (
         signed ? (isVerified ? <OtherRoutes /> : <VerifyEmail />) : <SignRoutes />

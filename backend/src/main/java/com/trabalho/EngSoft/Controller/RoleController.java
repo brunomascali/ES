@@ -1,6 +1,7 @@
 package com.trabalho.EngSoft.Controller;
 
 import com.trabalho.EngSoft.DTO.AlterRoleDTO;
+import com.trabalho.EngSoft.DTO.UserDTO;
 import com.trabalho.EngSoft.Model.Enums.RoleName;
 import com.trabalho.EngSoft.Model.Role;
 import com.trabalho.EngSoft.Model.User;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -50,13 +52,22 @@ public class RoleController {
 
             else if (Objects.equals(alterRoleDTO.getAction(), "remove") && roleStrMapping.containsKey(alterRoleDTO.getRole())) {
                 Role role = roleStrMapping.get(alterRoleDTO.getRole());
-                if (!user.getRoles().contains(role)) {
+                if (user.getRoles().contains(role)) {
                     user.getRoles().remove(role);
                     userRepository.save(user);
                 }
             }
 
-            return ResponseEntity.ok().build();
+            UserDTO userDTO = new UserDTO(
+                    user.getName(),
+                    user.getEmail(),
+                    user.getCpf(),
+                    user.getRoles().stream().map(
+                            role -> role.getRole().toString()
+                    ).collect(Collectors.toSet())
+            );
+
+            return ResponseEntity.ok(userDTO);
         }
 
         return ResponseEntity.notFound().build();

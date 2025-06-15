@@ -11,6 +11,7 @@ interface User {
 interface AuthContextData {
     signed: boolean;
     user: User | null;
+    setUser: (user: User | null) => void;
     Login: (userData: { email: string, password: string }) => Promise<void>;
     Logout: () => void;
 }
@@ -35,7 +36,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         });
         
         if (response.status === 200) {
-            console.log(response.data);
             setUser(response.data);
             localStorage.setItem('user', JSON.stringify(response.data));
         }
@@ -50,7 +50,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     }
 
     return (
-        <AuthContext.Provider value={{ signed: !!user, user, Login, Logout }}>
+        <AuthContext.Provider value={{ signed: !!user, user, setUser, Login, Logout }}>
             {children}
         </AuthContext.Provider>
     );

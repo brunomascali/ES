@@ -1,11 +1,10 @@
 package com.trabalho.EngSoft.Controller;
 
-import com.trabalho.EngSoft.DTO.SignupRequest;
+import com.trabalho.EngSoft.DTO.SignupRequestDTO;
 import com.trabalho.EngSoft.Model.Role;
 import com.trabalho.EngSoft.Model.Enums.RoleName;
 import com.trabalho.EngSoft.Model.User;
 import com.trabalho.EngSoft.Model.VerificationCode;
-import com.trabalho.EngSoft.Repository.RoleRepository;
 import com.trabalho.EngSoft.Repository.UserRepository;
 import com.trabalho.EngSoft.Repository.VerificationCodesRepository;
 
@@ -41,9 +40,24 @@ public class UserController {
         return userRepository.findAll();
     }
 
-    @GetMapping("/{id}")
-    public Optional<User> getUserById(@PathVariable long id) {
-        return userRepository.findById(id);
+    @GetMapping("/id/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable long id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<?> getUserById(@PathVariable String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
@@ -70,7 +84,7 @@ public class UserController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<?> createUser(@RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<?> createUser(@RequestBody SignupRequestDTO signupRequest) {
         // A verificação da checagem de email já está implementada na função de verificação
         // ela pode ser excluída do signUp, assim que a verificação for implementada no frontend
         if (userRepository.findByEmail(signupRequest.getEmail()).isPresent()) {

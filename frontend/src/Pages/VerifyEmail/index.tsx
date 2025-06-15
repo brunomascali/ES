@@ -12,7 +12,7 @@ enum ResendStatus {
 }
 
 export default function VerifyEmail() {
-    const { user } = useContext(AuthContext);
+    const { user, setUser } = useContext(AuthContext);
     const [code, setCode] = useState('');
     const [resendStatus, setResendStatus] = useState(ResendStatus.IDLE);
 
@@ -20,12 +20,15 @@ export default function VerifyEmail() {
         event.preventDefault();
 
         try {
-            const response = await axios.post('http://127.0.0.1:8080/api/verify/' + code);
+            const verifyRequestResponse = await axios.post('http://127.0.0.1:8080/api/verify/' + code);
 
-            if (response.status === 200 && user) {
-                user.roles = ["PASSENGER"];
-                localStorage.setItem('user', JSON.stringify(user));
-                window.location.href = '/';
+            if (verifyRequestResponse.status === 200 && user) {
+                const getUserResponse = await axios.get('http://127.0.0.1:8080/api/users/email/' + user.email);
+
+                if (getUserResponse.status === 200) {
+                    setUser(getUserResponse.data);
+                    window.location.href = '/';
+                }
             }
         } catch (error) {
             console.error(error);
