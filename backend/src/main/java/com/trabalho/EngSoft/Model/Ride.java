@@ -61,7 +61,7 @@ public class Ride {
     public boolean isUserInRide(User user){
         if (user.equals(driver))
             return true;
-        
+
         for (Passenger p : passengers){
             if (user.equals(p.getPassenger()))
                 return true;
@@ -69,7 +69,7 @@ public class Ride {
 
         return false;
     }
-    
+
     public void decreaseAvailableSeats(){
         this.availableSeats--;
     }

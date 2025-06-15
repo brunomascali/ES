@@ -1,7 +1,7 @@
 package com.trabalho.EngSoft.Initializer;
 
 import com.trabalho.EngSoft.Model.Role;
-import com.trabalho.EngSoft.Model.RoleName;
+import com.trabalho.EngSoft.Model.Enums.RoleName;
 import com.trabalho.EngSoft.Repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

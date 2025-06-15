@@ -2,7 +2,7 @@ package com.trabalho.EngSoft.Controller;
 
 import com.trabalho.EngSoft.DTO.SignupRequest;
 import com.trabalho.EngSoft.Model.Role;
-import com.trabalho.EngSoft.Model.RoleName;
+import com.trabalho.EngSoft.Model.Enums.RoleName;
 import com.trabalho.EngSoft.Model.User;
 import com.trabalho.EngSoft.Model.VerificationCode;
 import com.trabalho.EngSoft.Repository.UserRepository;

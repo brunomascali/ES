@@ -1,7 +1,7 @@
 package com.trabalho.EngSoft.Repository;
 
 import com.trabalho.EngSoft.Model.Role;
-import com.trabalho.EngSoft.Model.RoleName;
+import com.trabalho.EngSoft.Model.Enums.RoleName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

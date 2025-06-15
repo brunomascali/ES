@@ -6,7 +6,7 @@ import logo from '../../assets/logo.png';
 
 export default function Login() {
     const context = useContext(AuthContext);
-    const [input, setInput] = useState({ email: 'bruno.mascalivolkmer@inf.ufrgs.br', password: '123' });
+    const [input, setInput] = useState({ email: 'bmvolkmer@inf.ufrgs.br', password: '123' });
     const [invalidLogin, setInvalidLogin] = useState(false);
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {

@@ -1,5 +1,6 @@
 package com.trabalho.EngSoft.Model;
 
+import com.trabalho.EngSoft.Model.Enums.RoleName;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
