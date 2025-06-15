@@ -20,6 +20,8 @@ export default function Signup() {
         cpf: '12345678901',
         dateOfBirth: '2000-01-01',
     });
+    const [errors, setErrors] = useState<string[]>([]); 
+    const [isSuccess, setIsSuccess] = useState(false);
 
     const validateSignupForm = (input: SignupFormData) => {
         let errors = [];
@@ -32,13 +34,20 @@ export default function Signup() {
         if (new Date(input.dateOfBirth) > new Date()) {
             errors.push('A data de nascimento não pode ser maior que a data atual');
         }
+        if (new Date(input.dateOfBirth) > new Date(new Date().setFullYear(new Date().getFullYear() - 18))) {
+            errors.push('Você deve ter pelo menos 18 anos');
+        }
         return errors;
     }
 
     const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setErrors([]);
+        setIsSuccess(false);
 
-        if (validateSignupForm(input)) {
+        let errors = validateSignupForm(input);
+
+        if (errors.length === 0) {
             try {
                 const SignupRequest = {
                     name: input.username,
@@ -50,10 +59,16 @@ export default function Signup() {
                 const response = await axios.post('http://127.0.0.1:8080/api/users/create', SignupRequest);
 
                 if (response.status === 200) {
-                    window.location.href = '/';
+                    setIsSuccess(true);
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
                 }
             } catch (error) {
+                setErrors(['Erro ao criar conta. Por favor, tente novamente.']);
             }
+        } else {
+            setErrors(errors);
         }
     }
 
@@ -70,6 +85,19 @@ export default function Signup() {
                             <img src={logo} alt="Logo" className="mb-4" style={{ width: '240px' }} />
                         </div>
                         <h2 className="text-center mb-4">Cadastro</h2>
+                        {isSuccess && (
+                            <div className="alert alert-success" role="alert">
+                                <p className="mb-0">Conta criada com sucesso!</p>
+                                <small>Você será redirecionado para a página de login em instantes...</small>
+                            </div>
+                        )}
+                        {errors.length > 0 && (
+                            <div className="alert alert-danger" role="alert">
+                                {errors.map(error => (
+                                    <small className="d-block">{error}</small>
+                                ))}
+                            </div>
+                        )}
                         <form onSubmit={handleSignup}>
                             <div className="mb-3">
                                 <label htmlFor="username" className="form-label">Nome de usuário</label>
@@ -77,6 +105,7 @@ export default function Signup() {
                                     type="text"
                                     className="form-control form-control-lg"
                                     id="username"
+                                    name="username"
                                     placeholder="Digite seu nome de usuário"
                                     value={input.username}
                                     onChange={handleInputChange}
@@ -89,6 +118,7 @@ export default function Signup() {
                                     type="password"
                                     className="form-control form-control-lg"
                                     id="password"
+                                    name="password"
                                     placeholder="Digite sua senha"
                                     value={input.password}
                                     onChange={handleInputChange}
@@ -101,6 +131,7 @@ export default function Signup() {
                                     type="password"
                                     className="form-control form-control-lg"
                                     id="confirmPassword"
+                                    name="confirmPassword"
                                     placeholder="Confirme sua senha"
                                     value={input.confirmPassword}
                                     onChange={handleInputChange}
@@ -113,6 +144,7 @@ export default function Signup() {
                                     type="email"
                                     className="form-control form-control-lg"
                                     id="email"
+                                    name="email"
                                     placeholder="seu.email@ufrgs.br"
                                     value={input.email}
                                     onChange={handleInputChange}
@@ -126,6 +158,7 @@ export default function Signup() {
                                     type="text"
                                     className="form-control form-control-lg"
                                     id="cpf"
+                                    name="cpf"
                                     placeholder="Digite seu CPF"
                                     value={input.cpf}
                                     onChange={handleInputChange}
@@ -139,6 +172,7 @@ export default function Signup() {
                                     type="date"
                                     className="form-control form-control-lg"
                                     id="dateOfBirth"
+                                    name="dateOfBirth"
                                     value={input.dateOfBirth}
                                     onChange={handleInputChange}
                                     required

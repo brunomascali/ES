@@ -7,12 +7,14 @@ import logo from '../../assets/logo.png';
 export default function Login() {
     const context = useContext(AuthContext);
     const [input, setInput] = useState({ email: 'bruno.mascalivolkmer@inf.ufrgs.br', password: '123' });
+    const [invalidLogin, setInvalidLogin] = useState(false);
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
             await context.Login(input);
         } catch (error) {
+            setInvalidLogin(true);
         }
     };
 
@@ -61,6 +63,11 @@ export default function Login() {
                                 Entrar
                             </button>
                         </form>
+                        {invalidLogin && (
+                            <div className="alert alert-danger mt-3" role="alert">
+                                Erro! Email ou senha inválidos!
+                            </div>
+                        )}
                         <div className="mt-3 text-center">
                             <a href="/signup" className="text-decoration-none">
                                 Não tem uma conta? Cadastre-se
