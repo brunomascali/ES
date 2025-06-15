@@ -15,8 +15,8 @@ public class CNHInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (cnhRepository.count() == 0) {
             CNH cnh1 = new CNH();
-            cnh1.setCnh("1");
-            cnh1.setCpf("1");
+            cnh1.setCnh("11111111111");
+            cnh1.setCpf("11111111111");
             cnhRepository.save(cnh1);
 
             CNH cnh2 = new CNH();

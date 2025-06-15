@@ -5,6 +5,7 @@ import com.trabalho.EngSoft.Model.Role;
 import com.trabalho.EngSoft.Model.Enums.RoleName;
 import com.trabalho.EngSoft.Model.User;
 import com.trabalho.EngSoft.Model.VerificationCode;
+import com.trabalho.EngSoft.Repository.RoleRepository;
 import com.trabalho.EngSoft.Repository.UserRepository;
 import com.trabalho.EngSoft.Repository.VerificationCodesRepository;
 
@@ -52,7 +53,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{email}")
     public ResponseEntity<?> updateUser(@PathVariable long id, @RequestBody User user) {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
@@ -65,6 +66,8 @@ public class UserController {
 
         return ResponseEntity.notFound().build();
     }
+
+
 
     @PostMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody SignupRequest signupRequest) {

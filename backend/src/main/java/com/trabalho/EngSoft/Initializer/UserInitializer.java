@@ -37,12 +37,12 @@ public class UserInitializer implements CommandLineRunner {
 
             // Usuario já cadastrado como motorista
             User driver1 = new User();
-            driver1.setName("Joao da Silva");
+            driver1.setName("Bruno Mascali Volkmer");
             driver1.setPassword("123");
-            driver1.setEmail("joaodasilva@ufrgs.br");
-            driver1.setCpf("1");
+            driver1.setEmail("bmvolkmer@ufrgs.br");
+            driver1.setCpf("11111111111");
             driver1.setDateOfBirth(dob);
-            driver1.setRoles(Set.of(passengerRole, driverRole));
+            driver1.setRoles(Set.of(passengerRole));
             userRepository.save(driver1);
 
             // Usuario não cadastrado como motorista mas possui CNH
@@ -50,7 +50,7 @@ public class UserInitializer implements CommandLineRunner {
             driver2.setName("Maria da Silva");
             driver2.setPassword("123");
             driver2.setEmail("mariadasilva@ufrgs.br");
-            driver2.setCpf("2");
+            driver2.setCpf("22222222222");
             driver2.setDateOfBirth(dob);
             driver2.setRoles(Set.of(passengerRole));
             userRepository.save(driver2);
@@ -60,7 +60,7 @@ public class UserInitializer implements CommandLineRunner {
             passenger.setName("Roberto da Silva");
             passenger.setPassword("123");
             passenger.setEmail("robertodasilva@ufrgs.br");
-            passenger.setCpf("3");
+            passenger.setCpf("33333333333");
             passenger.setDateOfBirth(dob);
             passenger.setRoles(Set.of(passengerRole));
             userRepository.save(passenger);

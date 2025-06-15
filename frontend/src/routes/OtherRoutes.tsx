@@ -1,7 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "../Pages/Home";
-import Caronas from "../Pages/Caronas";
-import OferecerCarona from "../Pages/OfferRide";
+import Rides from "../Pages/Rides";
+import DriverSignup from "../Pages/DriverSignup";
+import OfferRide from "../Pages/OfferRide";
 import { useContext } from "react";
 import { AuthContext } from "../context/Auth";
 
@@ -11,10 +12,15 @@ export default function OtherRoutes() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/caronas" element={<Caronas />} />
+                <Route path="/caronas" element={<Rides />} />
+                {
+                    !user?.roles.includes("DRIVER") && (
+                        <Route path="/cadastro-motorista" element={<DriverSignup />} />
+                    )
+                }
                 {
                     user?.roles.includes("DRIVER") && (
-                        <Route path="/oferecer-carona" element={<OferecerCarona />} />
+                        <Route path="/oferecer-carona" element={<OfferRide />} />
                     )
                 }
             </Routes>

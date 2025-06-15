@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/cnh")
+@RequestMapping("/api/cnh")
 public class CNHController {
 
     @Autowired
