@@ -9,13 +9,13 @@ export default function Home() {
     return (
         <div>
             <TopMenu activePage="home" />
-            <div className="container py-5 d-flex flex-column align-items-center">
-                <h1>Bem-vindo de volta, {user?.name}!</h1>
-                <div className="flex flex-column gap-1">
+            <div className="container mx-auto py-8 flex flex-col items-center">
+                <h1 className="text-3xl font-bold mb-6">Bem-vindo de volta, {user?.name}!</h1>
+                <div className="flex flex-col gap-4 w-full max-w-md">
                     {
                         !user!.roles.includes("DRIVER") && (
                             <button
-                                className="btn btn-primary mt-3 w-100"
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 w-full"
                                 onClick={() => {
                                     window.location.href = "/cadastro-motorista";
                                 }}
@@ -27,7 +27,7 @@ export default function Home() {
                     {
                         user?.roles.includes("DRIVER") && (
                     <button
-                        className="btn btn-success btn- mt-3 w-100"
+                        className="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 w-full"
                         onClick={() => {
                             window.location.href = "/oferecer-carona";
                         }}
@@ -38,7 +38,7 @@ export default function Home() {
                     }
 
                     <button
-                        className="btn btn-success btn- mt-3 w-100"
+                        className="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 w-full"
                         onClick={() => {
                             window.location.href = "/caronas";
                         }}
