@@ -35,7 +35,7 @@ public class Ride {
     @ManyToOne
     private User driver;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 500)
     private String startAddress;
 
     @Column(nullable = false)
