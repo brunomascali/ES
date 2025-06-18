@@ -52,9 +52,9 @@ export default function DriverSignup() {
             if (alterRoleResponse.status === 200) {
                 setIsSuccess(true);
                 
+                setUser(alterRoleResponse.data);
+                localStorage.setItem('user', JSON.stringify(alterRoleResponse.data));
                 setTimeout(() => {
-                    setUser(alterRoleResponse.data);
-                    localStorage.setItem('user', JSON.stringify(alterRoleResponse.data));
                     window.location.href = "/";
                 }, 3000);
             }

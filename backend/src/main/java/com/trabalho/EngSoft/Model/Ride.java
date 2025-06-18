@@ -1,15 +1,24 @@
 package com.trabalho.EngSoft.Model;
 
-import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
+
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Set;
-import java.util.HashSet;
 
 @Entity
 @AllArgsConstructor
@@ -28,6 +37,12 @@ public class Ride {
 
     @Column(nullable = false)
     private String startAddress;
+
+    @Column(nullable = false)
+    private double latitude;
+
+    @Column(nullable = false)
+    private double longitude;
 
     @ElementCollection
     @CollectionTable(name = "ride_passengers", joinColumns = @JoinColumn(name = "ride_id"))
@@ -48,10 +63,21 @@ public class Ride {
     @Column(nullable = false)
     private int availableSeats;
 
+    @Column(nullable = false)
+    private float price;
+
+    private String description;
 
     // Métodos auxiliares
     public boolean active(){
-        return !(rideComplete) && (arrivalTime.compareTo(LocalTime.now()) > 0);
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        
+        if (date.equals(today)) {
+            return !(rideComplete) && (arrivalTime.compareTo(now) > 0);
+        } else {
+            return !(rideComplete) && (date.isAfter(today));
+        }
     }
 
     public boolean full(){

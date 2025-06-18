@@ -1,21 +1,30 @@
 package com.trabalho.EngSoft.Controller;
 
-import com.trabalho.EngSoft.Model.User;
-import com.trabalho.EngSoft.DTO.CreateRideDTO;
-import com.trabalho.EngSoft.DTO.AcceptRideDTO;
-import com.trabalho.EngSoft.Model.Ride;
-import com.trabalho.EngSoft.Model.Passenger;
-import com.trabalho.EngSoft.Repository.RideRepository;
-import com.trabalho.EngSoft.Repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Set;
-import java.util.Optional;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.trabalho.EngSoft.DTO.AcceptRideDTO;
+import com.trabalho.EngSoft.DTO.CreateRideDTO;
+import com.trabalho.EngSoft.Model.Passenger;
+import com.trabalho.EngSoft.Model.Ride;
+import com.trabalho.EngSoft.Model.User;
+import com.trabalho.EngSoft.Repository.RideRepository;
+import com.trabalho.EngSoft.Repository.UserRepository;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -69,8 +78,21 @@ public class RideController {
         newRide.setDriver(driver);
         newRide.setAvailableSeats(createRequest.getAvailableSeats());
         newRide.setStartAddress(createRequest.getStartingAddress());
-        newRide.setDate(LocalDate.now());
-        newRide.setArrivalTime(LocalTime.parse(createRequest.getArrivalTime()));
+        newRide.setLatitude(createRequest.getLatitude());
+        newRide.setLongitude(createRequest.getLongitude());
+        
+        try {
+            LocalDate rideDate = LocalDate.parse(createRequest.getDate());
+            LocalTime rideTime = LocalTime.parse(createRequest.getArrivalTime());
+            
+            newRide.setDate(rideDate);
+            newRide.setArrivalTime(rideTime);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Formato de data ou hora inválido");
+        }
+        
+        newRide.setDescription(createRequest.getDescription());
+        newRide.setPrice(createRequest.getPrice());
 
         rideRepository.save(newRide);
 
