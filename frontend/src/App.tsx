@@ -1,4 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import AuthProvider from './context/Auth';
 import AppRoutes from './routes';
