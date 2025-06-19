@@ -9,6 +9,8 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./backend/src/main/resources/reset-db.sql:/docker-entrypoint-initdb.d/reset-db.sql
+    ports: 
+      - "5432:5432"
 
   backend:
     build: ./backend
