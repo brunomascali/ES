@@ -1,6 +1,9 @@
 import { useState } from "react";
 import logo from '../../assets/logo.png';
 import axios from "axios";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
 
 type SignupFormData = {
     username: string;
@@ -13,12 +16,12 @@ type SignupFormData = {
 
 export default function Signup() {
     const [input, setInput] = useState<SignupFormData>({
-        username: 'Bruno Mascali Volkmer',
-        password: '123',
-        confirmPassword: '123',
-        email: 'bmvolkmer@inf.ufrgs.br',
-        cpf: '12345678901',
-        dateOfBirth: '2000-01-01',
+        username: '',
+        password: '',
+        confirmPassword: '',
+        email: '',
+        cpf: '',
+        dateOfBirth: '',
     });
     const [errors, setErrors] = useState<string[]>([]); 
     const [isSuccess, setIsSuccess] = useState(false);
@@ -36,6 +39,9 @@ export default function Signup() {
         }
         if (new Date(input.dateOfBirth) > new Date(new Date().setFullYear(new Date().getFullYear() - 18))) {
             errors.push('Você deve ter pelo menos 18 anos');
+        }
+        if (input.cpf.length !== 11) {
+            errors.push('O CPF deve ter 11 dígitos');
         }
         return errors;
     }
@@ -77,120 +83,108 @@ export default function Signup() {
     }
 
     return (
-        <div className="container py-5">
-            <div className="row justify-content-center">
-                <div className="col-md-4">
-                    <div className="p-4 text-center">
-                        <div className="d-flex justify-content-center">
-                            <img src={logo} alt="Logo" className="mb-4" style={{ width: '240px' }} />
-                        </div>
-                        <h2 className="text-center mb-4">Cadastro</h2>
-                        {isSuccess && (
-                            <div className="alert alert-success" role="alert">
-                                <p className="mb-0">Conta criada com sucesso!</p>
-                                <small>Você será redirecionado para a página de login em instantes...</small>
-                            </div>
-                        )}
-                        {errors.length > 0 && (
-                            <div className="alert alert-danger" role="alert">
-                                {errors.map(error => (
-                                    <small className="d-block">{error}</small>
-                                ))}
-                            </div>
-                        )}
-                        <form onSubmit={handleSignup}>
-                            <div className="mb-3">
-                                <label htmlFor="username" className="form-label">Nome de usuário</label>
-                                <input
-                                    type="text"
-                                    className="form-control form-control-lg"
-                                    id="username"
-                                    name="username"
-                                    placeholder="Digite seu nome de usuário"
-                                    value={input.username}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="password" className="form-label">Senha</label>
-                                <input
-                                    type="password"
-                                    className="form-control form-control-lg"
-                                    id="password"
-                                    name="password"
-                                    placeholder="Digite sua senha"
-                                    value={input.password}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="confirmPassword" className="form-label">Confirmar Senha</label>
-                                <input
-                                    type="password"
-                                    className="form-control form-control-lg"
-                                    id="confirmPassword"
-                                    name="confirmPassword"
-                                    placeholder="Confirme sua senha"
-                                    value={input.confirmPassword}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="email" className="form-label">Email</label>
-                                <input
-                                    type="email"
-                                    className="form-control form-control-lg"
-                                    id="email"
-                                    name="email"
-                                    placeholder="seu.email@ufrgs.br"
-                                    value={input.email}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                                <div className="form-text">Use seu email institucional @ufrgs.br</div>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="cpf" className="form-label">CPF</label>
-                                <input
-                                    type="text"
-                                    className="form-control form-control-lg"
-                                    id="cpf"
-                                    name="cpf"
-                                    placeholder="Digite seu CPF"
-                                    value={input.cpf}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="dateOfBirth" className="form-label">Data de Nascimento</label>
-                                <input
-                                    type="date"
-                                    className="form-control form-control-lg"
-                                    id="dateOfBirth"
-                                    name="dateOfBirth"
-                                    value={input.dateOfBirth}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                                <div className="form-text">Você deve ter pelo menos 18 anos</div>
-                            </div>
-                            <button type="submit" className="btn btn-primary w-100 btn-lg">
-                                Cadastrar
-                            </button>
-                        </form>
-                        <div className="mt-3 text-center">
-                            <a href="/" className="text-decoration-none">
-                                Já tem uma conta? Faça login
-                            </a>
-                        </div>
+        <div className="fixed inset-0 min-h-screen w-full bg-gray-50 flex items-center justify-center px-4">
+            <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 flex flex-col items-center">
+                <img src={logo} alt="Logo" className="mb-6 w-48" />
+                <h2 className="text-2xl font-bold mb-6 text-center">Cadastro</h2>
+                {isSuccess && (
+                    <Alert variant="default" className="mb-6 w-full">
+                        <AlertTitle>Conta criada com sucesso!</AlertTitle>
+                        <AlertDescription>Você será redirecionado para a página de login em instantes...</AlertDescription>
+                    </Alert>
+                )}
+                {errors.length > 0 && (
+                    <Alert variant="destructive" className="mb-6 w-full">
+                        <AlertTitle>Erro!</AlertTitle>
+                        <AlertDescription>
+                            {errors.map((error, idx) => (
+                                <div key={idx}>{error}</div>
+                            ))}
+                        </AlertDescription>
+                    </Alert>
+                )}
+                <form onSubmit={handleSignup} className="w-full space-y-5">
+                    <div>
+                        <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">Nome de usuário</label>
+                        <Input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Digite seu nome de usuário"
+                            value={input.username}
+                            onChange={handleInputChange}
+                            required
+                        />
                     </div>
+                    <div>
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                        <Input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Digite sua senha"
+                            value={input.password}
+                            onChange={handleInputChange}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">Confirmar Senha</label>
+                        <Input
+                            type="password"
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            placeholder="Confirme sua senha"
+                            value={input.confirmPassword}
+                            onChange={handleInputChange}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <Input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="seu.email@ufrgs.br"
+                            value={input.email}
+                            onChange={handleInputChange}
+                            required
+                        />
+                        <div className="text-xs text-gray-500 mt-1">Use seu email institucional @ufrgs.br</div>
+                    </div>
+                    <div>
+                        <label htmlFor="cpf" className="block text-sm font-medium text-gray-700 mb-1">CPF</label>
+                        <Input
+                            type="text"
+                            id="cpf"
+                            name="cpf"
+                            placeholder="Digite seu CPF"
+                            value={input.cpf}
+                            onChange={handleInputChange}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">Data de Nascimento</label>
+                        <Input
+                            type="date"
+                            id="dateOfBirth"
+                            name="dateOfBirth"
+                            value={input.dateOfBirth}
+                            onChange={handleInputChange}
+                            required
+                        />
+                        <div className="text-xs text-gray-500 mt-1">Você deve ter pelo menos 18 anos</div>
+                    </div>
+                    <Button type="submit" className="w-full">Cadastrar</Button>
+                </form>
+                <div className="mt-6 text-center w-full">
+                    <a href="/" className="text-indigo-600 hover:underline text-sm font-medium">
+                        Já tem uma conta? Faça login
+                    </a>
                 </div>
             </div>
         </div>
     )
-};
+}
