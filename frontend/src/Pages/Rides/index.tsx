@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 export interface Ride { 
+    id: number,
     driver: string,
     startAddress: string,
     latitude: number,
@@ -82,7 +83,8 @@ export default function Caronas() {
                         <div className="space-y-6">
                             {rides.map((ride, index) => (
                                 <RideCard 
-                                    key={ride.driver + ride.date + ride.arrivalTime + index}
+                                    key={ride.id}
+                                    id={ride.id}
                                     driver={ride.driver}
                                     startAddress={ride.startAddress}
                                     latitude={ride.latitude}

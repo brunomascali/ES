@@ -42,6 +42,15 @@ public class RideController {
         return rideRepository.findAll();
     }
 
+    // Retorna uma carona por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getRideById(@PathVariable Long id){
+        Optional<Ride> ride = rideRepository.findById(id);
+        if (ride.isEmpty())
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok().body(ride.get());
+    }
+
     // Retorna todas as caronas que ainda estão ativas
     @GetMapping("/activeRides")
     public List<Ride> getDriverRides(){

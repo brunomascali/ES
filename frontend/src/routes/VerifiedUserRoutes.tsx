@@ -5,8 +5,9 @@ import DriverSignup from "../Pages/DriverSignup";
 import OfferRide from "../Pages/OfferRide";
 import { useContext } from "react";
 import { AuthContext } from "../context/Auth";
+import RidePage from "../Pages/RidePage";
 
-export default function OtherRoutes() {
+export default function VerifiedUserRoutes() {
     const { user } = useContext(AuthContext);
     return (
         <BrowserRouter>
@@ -23,6 +24,7 @@ export default function OtherRoutes() {
                         <Route path="/oferecer-carona" element={<OfferRide />} />
                     )
                 }
+                <Route path="/carona/:id" element={<RidePage />} />
             </Routes>
         </BrowserRouter>
     );

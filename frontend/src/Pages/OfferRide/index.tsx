@@ -39,7 +39,6 @@ export default function OfferRide() {
         if (coordinatesResponse.status === 200) {
             const updatedData = { 
                 ...offerRideData, 
-                startingAddress: coordinatesResponse.data[0].display_name, 
                 latitude: coordinatesResponse.data[0].lat, 
                 longitude: coordinatesResponse.data[0].lon,
             };

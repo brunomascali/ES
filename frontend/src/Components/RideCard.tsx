@@ -42,7 +42,7 @@ export default function RideCard(ride: Ride) {
                         </div>
 
                         <div className="pt-2">
-                            <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md cursor-pointer">
+                            <button onClick={() => window.location.href = `/carona/${ride.id}`} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md cursor-pointer">
                                 Ver detalhes
                             </button>
                         </div>

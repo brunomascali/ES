@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/Auth";
-import OtherRoutes from "./OtherRoutes";
-import SignRoutes from "./SignRoutes";
+import VerifiedUserRoutes from "./VerifiedUserRoutes";
+import LoggedOutRoutes from "./LoggedOutRoutes";
 import VerifyEmail from "../Pages/VerifyEmail";
 
 export default function AppRoutes() {
@@ -16,7 +16,13 @@ export default function AppRoutes() {
         }
     }, [signed, user]);
 
-    return (
-        signed ? (isVerified ? <OtherRoutes /> : <VerifyEmail />) : <SignRoutes />
-    )
+    if (!signed) {
+        return <LoggedOutRoutes />;
+    }
+    else if (isVerified) {
+        return <VerifiedUserRoutes />;
+    }
+    else {
+        return <VerifyEmail />;
+    }
 }
