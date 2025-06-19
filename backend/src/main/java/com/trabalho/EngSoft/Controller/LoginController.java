@@ -24,6 +24,10 @@ public class LoginController {
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
         Optional<User> user = userRepository.findByEmail(loginRequest.getEmail());
 
+        if (user.isPresent() && user.get().isBanned()) {
+            return ResponseEntity.status(403).body("Usuário banido");
+        }
+
         if (user.isPresent() && user.get().getPassword().equals(loginRequest.getPassword())) {
             Set<String> roles = user.get().getRoles().stream().map(
                     (Role role) -> role.getRole().toString()

@@ -51,7 +51,7 @@ public class UserController {
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<?> getUserById(@PathVariable String email) {
+    public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get());
@@ -115,5 +115,19 @@ public class UserController {
         emailService.SendVerificationCode(user.getEmail(), code);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/ban/{id}")
+    public ResponseEntity<?> banUser(@PathVariable long id) {
+        Optional<User> user_opt = userRepository.findById(id);
+        if (user_opt.isPresent()) {
+            User user = user_opt.get();
+            user.setBanned(true);
+            userRepository.save(user);
+
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.notFound().build();
     }
 }
