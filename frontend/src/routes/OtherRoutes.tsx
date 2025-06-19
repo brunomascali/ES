@@ -5,8 +5,9 @@ import DriverSignup from "../Pages/DriverSignup";
 import OfferRide from "../Pages/OfferRide";
 import { useContext } from "react";
 import { AuthContext } from "../context/Auth";
+import Complaints from "../Pages/Complaints";
 
-export default function OtherRoutes() {
+export default function OtherRoutes({ isAdmin }: { isAdmin: boolean }) {
     const { user } = useContext(AuthContext);
     return (
         <BrowserRouter>
@@ -21,6 +22,11 @@ export default function OtherRoutes() {
                 {
                     user?.roles.includes("DRIVER") && (
                         <Route path="/oferecer-carona" element={<OfferRide />} />
+                    )
+                }
+                {
+                    isAdmin && (
+                        <Route path="/denuncias" element={<Complaints />} />
                     )
                 }
             </Routes>

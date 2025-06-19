@@ -37,4 +37,7 @@ public class User {
 
     @ManyToMany(targetEntity = Role.class)
     private Set<Role> roles;
+
+    @Column(nullable = false)
+    private boolean banned;
 }

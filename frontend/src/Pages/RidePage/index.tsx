@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Ride } from "../Rides";
 import axios from "axios";
-import TopMenu from "../../Components/TopMenu";
-import Minimap from "../../Components/Minimap";
-import AvailableSeatsIcons from "../../Components/AvailableSeatsIcons";
+import TopMenu from "../../components/TopMenu";
+import Minimap from "../../components/Minimap";
+import AvailableSeatsIcons from "../../components/AvailableSeatsIcons";
 
 export default function RidePage() {
     const { id } = useParams<{ id: string }>();

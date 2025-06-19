@@ -9,13 +9,20 @@ export default function Login() {
     const context = useContext(AuthContext);
     const [input, setInput] = useState({ email: 'bmvolkmer@inf.ufrgs.br', password: '123' });
     const [invalidLogin, setInvalidLogin] = useState(false);
+    const [banned, setBanned] = useState(false);
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setInvalidLogin(false);
+        setBanned(false);
         try {
             await context.Login(input);
-        } catch (error) {
-            setInvalidLogin(true);
+        } catch (error: any) {
+            if (error.response.status === 403) {
+                setBanned(true);
+            } else {
+                setInvalidLogin(true);
+            }
         }
     };
 
@@ -60,6 +67,12 @@ export default function Login() {
                     <Alert variant="destructive" className="mt-6 w-full">
                         <AlertTitle>Erro!</AlertTitle>
                         <AlertDescription>Email ou senha inválidos!</AlertDescription>
+                    </Alert>
+                )}
+                {banned && (
+                    <Alert variant="destructive" className="mt-6 w-full">
+                        <AlertTitle>Erro!</AlertTitle>
+                        <AlertDescription>Usuário banido!</AlertDescription>
                     </Alert>
                 )}
                 <div className="mt-6 text-center w-full">

@@ -39,6 +39,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             setUser(response.data);
             localStorage.setItem('user', JSON.stringify(response.data));
         }
+        if (response.status === 403) {
+            throw new Error('Usuário banido');
+        }
         
         return response.data;
     }

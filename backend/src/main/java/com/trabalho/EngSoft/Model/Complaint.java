@@ -1,11 +1,6 @@
-import com.trabalho.EngSoft.Model.User;
+package com.trabalho.EngSoft.Model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,14 +18,15 @@ public class Complaint {
     private Long id;
     
     @Column(nullable = false)
-    private User from;
+    private Long user_id_from;
 
     @Column(nullable = false)
-    private User to;
+    private Long user_id_to;
 
     @Column(nullable = false)
     private String description;
 
+    // open | banned | notbanned
     @Column(nullable = false)
     private String status;
 }

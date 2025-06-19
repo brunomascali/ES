@@ -50,6 +50,17 @@ export default function TopMenu({ activePage }: { activePage: string }) {
                             Oferecer Carona
                         </a>
                     )}
+                    {user?.roles.includes("ADMIN") && (
+                        <a
+                            href="/denuncias"
+                            className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === 'denuncias'
+                                ? 'bg-indigo-600 text-white'
+                                : 'text-gray-700 hover:bg-indigo-100 hover:text-indigo-700'
+                                }`}
+                        >
+                            Denuncias
+                        </a>
+                    )}
                 </div>
                 <button
                     onClick={Logout}
