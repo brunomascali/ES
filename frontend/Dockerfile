@@ -1,11 +1,14 @@
-FROM node:jod-bullseye
+FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+COPY package*.json pnpm-lock.yaml* ./
+RUN pnpm install
 
 COPY . .
 
 EXPOSE 3000
-CMD [ "npm", "start"]
+
+CMD ["pnpm", "run", "dev"]

@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import TopMenu from "../../Components/TopMenu";
+import TopMenu from "../../components/TopMenu";
 import { AuthContext } from "../../context/Auth";
 import axios from "axios";
 
@@ -59,7 +59,7 @@ export default function OfferRide() {
             ...offerRideData,
             price: Number(offerRideData.price),
             date: offerRideData.date,
-            arrivalTime: offerRideData.arrivalTime
+            arrivalTime: offerRideData.arrivalTime,
         });
         if (offerRideResponse.status === 200) {
             alert("Carona oferecida com sucesso");
@@ -72,80 +72,114 @@ export default function OfferRide() {
     return (
         <div>
             <TopMenu activePage="oferecerCarona" />
-            <div className="container py-5 d-flex justify-content-center">
-                <form style={{ width: "600px" }} onSubmit={handleOfferRideSubmit}>
-                    <div className="mb-4 d-flex flex-column align-items-center">
-                        <h1 className="mb-5">Oferecer Carona</h1>
-                        <div className="mb-4 w-100">
-                            <label htmlFor="description" className="form-label fs-4">Descrição</label>
+            <div className="container mx-auto py-8 px-4">
+                <div className="flex justify-center">
+                    <form className="w-full max-w-2xl space-y-6" onSubmit={handleOfferRideSubmit}>
+                        <div className="text-center">
+                            <h1 className="text-3xl font-bold text-gray-900 mb-8">Oferecer Carona</h1>
+                        </div>
+                        
+                        <div>
+                            <label htmlFor="description" className="block text-lg font-medium text-gray-700 mb-2">
+                                Descrição
+                            </label>
                             <textarea
-                                className="form-control form-control-lg"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
                                 id="description"
                                 rows={6}
                                 value={offerRideData.description}
                                 placeholder="Exemplo: saio as 10 da manhã, tenho 2 vagas disponíveis, o preço é de R$5,00. Moro perto da rua X e minha rota é Y"
                                 onChange={(e) => setOfferRideData({ ...offerRideData, description: e.target.value })}
-                            ></textarea>
+                            />
                         </div>
-                        <div className="mb-4 w-100 d-flex gap-3">
-                            <div className="flex-fill">
-                                <label htmlFor="date" className="form-label fs-4">Data</label>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="date" className="block text-lg font-medium text-gray-700 mb-2">
+                                    Data
+                                </label>
                                 <input
                                     required
                                     type="date"
-                                    className="form-control form-control-lg"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                     id="date"
                                     value={offerRideData.date}
                                     onChange={(e) => setOfferRideData({ ...offerRideData, date: e.target.value })}
                                 />
                             </div>
-                            <div className="flex-fill">
-                                <label htmlFor="time" className="form-label fs-4">Horário</label>
+                            <div>
+                                <label htmlFor="time" className="block text-lg font-medium text-gray-700 mb-2">
+                                    Horário
+                                </label>
                                 <input
                                     required
                                     type="time"
-                                    className="form-control form-control-lg"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                     id="time"
                                     value={offerRideData.arrivalTime}
                                     onChange={(e) => setOfferRideData({ ...offerRideData, arrivalTime: e.target.value })}
                                 />
                             </div>
                         </div>
-                        <div className="mb-4 w-100">
-                                <label htmlFor="address" className="form-label fs-4">Endereço</label>
-                                <input required type="text" className="form-control form-control-lg" id="address" value={offerRideData.startingAddress} onChange={(e) => setOfferRideData({ ...offerRideData, startingAddress: e.target.value })} />
-                                <button type="button" onClick={handleAddressSubmit} className="btn btn-primary btn-lg w-100 mt-3" style={{ fontSize: "1.5rem" }}>Buscar</button>
+                        
+                        <div>
+                            <label htmlFor="address" className="block text-lg font-medium text-gray-700 mb-2">
+                                Endereço de Partida
+                            </label>
+                            <input 
+                                required 
+                                type="text" 
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                                id="address" 
+                                value={offerRideData.startingAddress} 
+                                onChange={(e) => setOfferRideData({ ...offerRideData, startingAddress: e.target.value })} 
+                            />
+                            <button 
+                                type="button" 
+                                onClick={handleAddressSubmit} 
+                                className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-lg"
+                            >
+                                Buscar
+                            </button>
                         </div>
-                        <div className="mb-2 w-100 d-flex gap-3">
-                            <div className="flex-fill">
-                                <label htmlFor="latitude" className="form-label fs-4">Latitude</label>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="latitude" className="block text-lg font-medium text-gray-700 mb-2">
+                                    Latitude
+                                </label>
                                 <input
                                     disabled
                                     type="text" 
-                                    className="form-control form-control-lg" 
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-gray-50 text-gray-500" 
                                     id="latitude" 
                                     value={offerRideData.latitude} 
                                     onChange={(e) => setOfferRideData({ ...offerRideData, latitude: parseFloat(e.target.value) })} 
                                 />
                             </div>
-                            <div className="flex-fill">
-                                <label htmlFor="longitude" className="form-label fs-4">Longitude</label>
+                            <div>
+                                <label htmlFor="longitude" className="block text-lg font-medium text-gray-700 mb-2">
+                                    Longitude
+                                </label>
                                 <input
                                     disabled
                                     type="text" 
-                                    className="form-control form-control-lg" 
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-gray-50 text-gray-500" 
                                     id="longitude" 
                                     value={offerRideData.longitude} 
                                     onChange={(e) => setOfferRideData({ ...offerRideData, longitude: parseFloat(e.target.value) })} 
                                 />
                             </div>
                         </div>
-                        <div className="mb-4 w-100">
-                            <label htmlFor="seats" className="form-label fs-4">Vagas Disponíveis</label>
+                        
+                        <div>
+                            <label htmlFor="seats" className="block text-lg font-medium text-gray-700 mb-2">
+                                Vagas Disponíveis
+                            </label>
                             <input
                                 required
                                 type="number"
-                                className="form-control form-control-lg"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 id="seats"
                                 min={1}
                                 max={3}
@@ -153,14 +187,19 @@ export default function OfferRide() {
                                 onChange={(e) => setOfferRideData({ ...offerRideData, availableSeats: parseInt(e.target.value) as 1 | 2 | 3 })}
                             />
                         </div>
-                        <div className="mb-4 w-100">
-                            <label htmlFor="price" className="form-label fs-4">Preço</label>
-                            <div className="input-group">
-                                <span className="input-group-text" style={{ fontSize: "1.5rem" }}>R$</span>
+                        
+                        <div>
+                            <label htmlFor="price" className="block text-lg font-medium text-gray-700 mb-2">
+                                Preço
+                            </label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg font-medium">
+                                    R$
+                                </span>
                                 <input
                                     type="number"
                                     inputMode="decimal"
-                                    className="form-control form-control-lg"
+                                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                     id="price"
                                     min="0"
                                     step="0.01"
@@ -170,11 +209,15 @@ export default function OfferRide() {
                                 />
                             </div>
                         </div>
-                        <button type="submit" className="btn btn-primary btn-lg w-100 mt-3" style={{ fontSize: "1.5rem" }}>
+                        
+                        <button 
+                            type="submit" 
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-lg"
+                        >
                             Oferecer Carona
                         </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     );
