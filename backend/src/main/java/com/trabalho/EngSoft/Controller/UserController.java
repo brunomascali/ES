@@ -1,6 +1,7 @@
 package com.trabalho.EngSoft.Controller;
 
 import com.trabalho.EngSoft.DTO.SignupRequestDTO;
+import com.trabalho.EngSoft.DTO.RideHistoryItemDTO;
 import com.trabalho.EngSoft.Model.Role;
 import com.trabalho.EngSoft.Model.Enums.RoleName;
 import com.trabalho.EngSoft.Model.User;
@@ -8,8 +9,10 @@ import com.trabalho.EngSoft.Model.VerificationCode;
 import com.trabalho.EngSoft.Repository.UserRepository;
 import com.trabalho.EngSoft.Repository.VerificationCodesRepository;
 
+
 import com.trabalho.EngSoft.Service.EmailService;
 import com.trabalho.EngSoft.Service.VerificationCodeGenerator;
+import com.trabalho.EngSoft.Service.RideService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +31,9 @@ public class UserController {
 
     @Autowired
     private VerificationCodesRepository verificationCodesRepository;
+
+    @Autowired 
+    private RideService rideService;
 
     private final EmailService emailService;
 
@@ -127,5 +133,18 @@ public class UserController {
         }
 
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/{userId}/ride-history") 
+    public ResponseEntity<List<RideHistoryItemDTO>> getUserRideHistory(@PathVariable Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            List<RideHistoryItemDTO> history = rideService.getUserRideHistory(user); 
+            return ResponseEntity.ok(history); 
+        }
+
+        return ResponseEntity.notFound().build(); 
     }
 }
