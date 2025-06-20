@@ -2,8 +2,10 @@ import logo from "../assets/logo.png";
 import { useContext } from "react";
 import { AuthContext } from "../context/Auth";
 
-export default function TopMenu({ activePage }: { activePage: string }) {
+export default function TopMenu() {
     const { Logout, user } = useContext(AuthContext);
+
+    const activePage: string = window.location.pathname.split('/')[1];
 
     return (
         <nav className="bg-indigo-50 py-2 px-5 w-full shadow-md">
@@ -14,7 +16,7 @@ export default function TopMenu({ activePage }: { activePage: string }) {
                     </a>
                     <a
                         href="/"
-                        className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === 'home'
+                        className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === ''
                             ? 'bg-indigo-600 text-white'
                             : 'text-gray-700 hover:bg-indigo-100 hover:text-indigo-700'
                             }`}
@@ -42,7 +44,7 @@ export default function TopMenu({ activePage }: { activePage: string }) {
                     {user?.roles.includes("DRIVER") && (
                         <a
                             href="/oferecer-carona"
-                            className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === 'motorista'
+                            className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === 'oferecer-carona'
                                 ? 'bg-indigo-600 text-white'
                                 : 'text-gray-700 hover:bg-indigo-100 hover:text-indigo-700'
                                 }`}

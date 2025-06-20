@@ -92,7 +92,7 @@ export default function DriverSignup() {
 
     return (
         <div>
-            <TopMenu activePage="cadastroMotorista" />
+            <TopMenu />
             <div className="container mx-auto py-8 px-4">
                 <div className="flex flex-col items-center space-y-6">
                     <h1 className="text-3xl font-bold text-gray-900 text-center">

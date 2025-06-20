@@ -2,8 +2,6 @@ export default function Minimap({ width, height, address }: { width: number, hei
     const encodedAddress = encodeURIComponent(address);
     const src = `https://maps.google.com/maps?width=${width}&height=${height}&hl=pt-BR&q=${encodedAddress}&t=&z=14&ie=UTF8&iwloc=B&output=embed`;
 
-    console.log(encodedAddress);
-
     return (
         <div style={{ width: "100%" }}>
             <iframe

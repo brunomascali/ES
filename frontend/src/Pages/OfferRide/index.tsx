@@ -71,7 +71,7 @@ export default function OfferRide() {
 
     return (
         <div>
-            <TopMenu activePage="oferecerCarona" />
+            <TopMenu />
             <div className="container mx-auto py-8 px-4">
                 <div className="flex justify-center">
                     <form className="w-full max-w-2xl space-y-6" onSubmit={handleOfferRideSubmit}>
