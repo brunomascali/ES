@@ -53,6 +53,10 @@ export default function OfferRide() {
             alert("Endereço não pode ser vazio");
             return;
         }
+        if (offerRideData.date <= new Date().toISOString().split('T')[0]) {
+            alert("Data não pode ser anterior à data atual");
+            return;
+        }
 
         const offerRideResponse = await axios.post("http://127.0.0.1:8080/api/rides/create", {
             ...offerRideData,

@@ -8,6 +8,20 @@ import { AuthContext, type User } from "../../context/Auth";
 import { Button } from "../../components/ui/button";
 import { Calendar, Clock, DollarSign, Users, MapPin, FileText, Car } from "lucide-react";
 
+const Block = ({ title, children, icon }: { title: string, children: React.ReactNode, icon: React.ReactNode }) => {
+    return (
+        <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-4 w-full">
+            <div className="flex items-start space-x-4 w-full">
+                <p className="text-sm font-medium text-gray-500">{icon}</p>
+                <div className="flex flex-col w-full">
+                    <p className="text-sm font-medium text-gray-500 mb-2">{title}</p>
+                    {children}
+                </div>
+            </div>
+        </div>
+    )
+}
+
 interface IDriverInfo {
     id: string;
     driver: {
@@ -46,7 +60,7 @@ const RequestRideForm = ({ ride }: { ride: IRide | null }) => {
                 alert("Carona solicitada com sucesso!");
             }
         } catch (error) {
-            console.error("Erro ao solicitar carona:", error);
+            alert("Carona já solicitada por este usuário");
         }
     }
 
@@ -92,20 +106,47 @@ const RideRequestList = ({ rideRequest }: { rideRequest: IRideRequest[] }) => {
         }
     }
 
-    return (
-        <div>
-            <h2>Solicitações de Carona</h2>
-            <ul>
-                {rideRequest.map((request) => (
+    const handleRejectRide = async (rideId: string, userAddress: string, userCPF: string) => {
+        const rideRequest: IRideRequest = {
+            rideId: rideId,
+            userCPF: userCPF,
+            userAddress: userAddress,
+        };
+        const response = await axios.post(`http://127.0.0.1:8080/api/rides/rejectPassenger`, rideRequest);
+        if (response.status === 200) {
+            alert("Carona rejeitada com sucesso!");
+        }
+    }
 
-                    <div className="flex gap-4">
-                        <li key={request.rideId}>{request.userAddress}</li>
-                        <Button onClick={() => handleAcceptRide(request.rideId, request.userAddress, request.userCPF)} className="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2">Aceitar Carona</Button>
-                        <Button className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2">Rejeitar Carona</Button>
+    return (
+        <Block title="Solicitações de Carona" icon={<Users className="w-6 h-6 text-indigo-600 mt-1" />}>
+            <div className="space-y-3 mt-2">
+                {rideRequest.map((request) => (
+                    <div
+                        key={request.rideId}
+                        className="rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+                    >
+                        <div className="p-4 text-center">
+                            <p className="text-lg text-gray-800">{request.userAddress}</p>
+                        </div>
+                        <div className="grid grid-cols-2 border-t border-gray-100">
+                            <Button
+                                onClick={() => handleAcceptRide(request.rideId, request.userAddress, request.userCPF)}
+                                className="cursor-pointer bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-none border-r border-green-800 transition-colors duration-200"
+                            >
+                                Aceitar
+                            </Button>
+                            <Button
+                                onClick={() => handleRejectRide(request.rideId, request.userAddress, request.userCPF)}
+                                className="cursor-pointer bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-none transition-colors duration-200"
+                            >
+                                Rejeitar
+                            </Button>
+                        </div>
                     </div>
                 ))}
-            </ul>
-        </div>
+            </div>
+        </Block>
     );
 }
 
@@ -128,25 +169,21 @@ const PassengerList = ({ ride }: { ride: IRide | null }) => {
     }, []);
 
     return (
-        <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-4 w-full">
-            <Users className="w-6 h-6 text-indigo-600 mt-1" />
-            <div>
-                <p className="text-sm font-medium text-gray-500">Passageiros</p>
-                <ul className="space-y-2">
+        <Block title="Passageiros" icon={<Users className="w-6 h-6 text-indigo-600 mt-1" />}>
+                <ul className="space-y-2 w-full">
                     {passengers.map((passenger) => (
                         <li
                             key={passenger.name}
-                            className="flex items-center justify-between bg-gray-100 rounded-md px-4 py-2"
+                            className="flex items-center justify-between bg-gray-100 rounded-md px-4 py-2 w-full"
                         >
                             <div className="flex flex-col w-full">
-                                <p className="font-medium">{passenger.name}</p>
-                                <p className="text-gray-600">{passenger.address}</p>
+                                <p className="font-medium">Nome: {passenger.name}</p>
+                                <p className="text-gray-600">Endereço: {passenger.address}</p>
                             </div>
                         </li>
                     ))}
                 </ul>
-            </div>
-        </div>
+        </Block>
     );
 }
 
@@ -221,71 +258,45 @@ export default function RidePage() {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-4">
-                                        <Calendar className="w-6 h-6 text-indigo-600 mt-1" />
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-500">Data</p>
-                                            <p className="text-lg font-semibold text-gray-900">
-                                                {ride?.date ? new Date(ride.date).toLocaleDateString('pt-BR') : ""}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-4">
-                                        <Clock className="w-6 h-6 text-indigo-600 mt-1" />
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-500">Horário de Chegada</p>
-                                            <p className="text-lg font-semibold text-gray-900">{ride?.arrivalTime}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-4">
-                                        <DollarSign className="w-6 h-6 text-green-600 mt-1" />
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-500">Preço</p>
-                                            <p className="text-lg font-semibold text-green-600">
-                                                R$ {ride?.price.toFixed(2)}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-4">
-                                        <Users className="w-6 h-6 text-indigo-600 mt-1" />
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-500">Vagas Disponíveis</p>
-                                            <p className="text-lg font-semibold text-gray-900">
-                                                {ride?.availableSeats}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-4">
-                                    <MapPin className="w-6 h-6 text-indigo-600 mt-1" />
-                                    <div>
-                                        <p className="text-sm font-medium text-gray-500">Local de Partida</p>
+                                    <Block title="Data" icon={<Calendar className="w-6 h-6 text-indigo-600 mt-1" />}>
                                         <p className="text-lg font-semibold text-gray-900">
-                                            {ride?.startAddress}
+                                            {ride?.date ? new Date(ride.date).toLocaleDateString('pt-BR') : ""}
                                         </p>
-                                    </div>
+                                    </Block>
+
+                                    <Block title="Horário de Chegada" icon={<Clock className="w-6 h-6 text-indigo-600 mt-1" />}>
+                                        <p className="text-lg font-semibold text-gray-900">
+                                            {ride?.arrivalTime}
+                                        </p>
+                                    </Block>
+
+                                    <Block title="Preço" icon={<DollarSign className="w-6 h-6 text-green-600 mt-1" />}>
+                                        <p className="text-lg font-semibold text-green-600">
+                                            R$ {ride?.price.toFixed(2)}
+                                        </p>
+                                    </Block>
+
+                                    <Block title="Vagas Disponíveis" icon={<Users className="w-6 h-6 text-indigo-600 mt-1" />}>
+                                        <p className="text-lg font-semibold text-gray-900">
+                                            {ride?.availableSeats}
+                                        </p>
+                                    </Block>
                                 </div>
 
-                                <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-4">
-                                    <Car className="w-6 h-6 text-indigo-600 mt-1" />
-                                    <div>
-                                        <p className="text-sm font-medium text-gray-500">Veículo</p>
-                                        <p className="text-lg font-semibold text-gray-900">{driverInfo?.model} {driverInfo?.color} - {driverInfo?.plate}</p>
-                                    </div>
-                                </div>
+                                <Block title="Local de Partida" icon={<MapPin className="w-6 h-6 text-indigo-600 mt-1" />}>
+                                    <p className="text-lg font-semibold text-gray-900">
+                                        {ride?.startAddress}
+                                    </p>
+                                </Block>
+
+                                <Block title="Veículo" icon={<Car className="w-6 h-6 text-indigo-600 mt-1" />}>
+                                    <p className="text-lg font-semibold text-gray-900">{driverInfo?.model} {driverInfo?.color} - {driverInfo?.plate}</p>
+                                </Block>
 
                                 {ride?.description && (
-                                    <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-4">
-                                        <FileText className="w-6 h-6 text-indigo-600 mt-1" />
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-500">Descrição</p>
-                                            <p className="text-lg text-gray-900">{ride.description}</p>
-                                        </div>
-                                    </div>
+                                    <Block title="Descrição" icon={<FileText className="w-6 h-6 text-indigo-600 mt-1" />}>
+                                        <p className="text-lg text-gray-900">{ride.description}</p>
+                                    </Block>
                                 )}
 
                                 {ride?.driver.name !== user?.name ? (
@@ -299,7 +310,6 @@ export default function RidePage() {
                                 {ride?.driver.name === user?.name && (
                                     <RideRequestList rideRequest={rideRequest} />
                                 )}
-
 
                             </div>
 

@@ -140,6 +140,11 @@ public class RideController {
         if (ride.full())
             return ResponseEntity.badRequest().body("Carona lotada");
 
+        List<RideRequest> requests = rideRequestRepository.findByRideId(rideRequestDTO.getRideId());
+        if (requests.stream().anyMatch(request -> Objects.equals(request.getUserCPF(), rideRequestDTO.getUserCPF()))) {
+            return ResponseEntity.badRequest().body("Usuário já solicitou carona");
+        }
+
         RideRequest request = new RideRequest();
         request.setRideId(rideRequestDTO.getRideId());
         request.setUserAddress(rideRequestDTO.getUserAddress());
@@ -175,6 +180,35 @@ public class RideController {
 
         ride.getPassengers().add(passenger);
         rideRepository.save(ride);
+
+        List<RideRequest> rideRequests = rideRequestRepository.findByRideId(ride.getId());
+        for (RideRequest rideRequest1 : rideRequests) {
+            if (Objects.equals(rideRequest1.getUserCPF(), rideRequestDTO.getUserCPF())) {
+                rideRequestRepository.delete(rideRequest1);
+            }
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/rejectPassenger")
+    public ResponseEntity<?> rejectPassenger(@RequestBody RideRequestDTO rideRequestDTO) {
+        Optional<User> userToAccept = userRepository.findByCpf(rideRequestDTO.getUserCPF());
+        Optional<Ride> rideToAccept = rideRepository.findById(rideRequestDTO.getRideId());
+
+        if (rideToAccept.isEmpty())
+            return ResponseEntity.badRequest().body("Carona inexistente");
+        if (userToAccept.isEmpty())
+            return ResponseEntity.badRequest().body("Usuário inexistente");
+
+        Ride ride = rideToAccept.get();
+
+        // Checa se a carona já foi concluída ou se já está lotada
+        if (!ride.active())
+            return ResponseEntity.badRequest().body("Carona já foi concluída");
+
+        if (ride.full())
+            return ResponseEntity.badRequest().body("Carona lotada");
 
         List<RideRequest> rideRequests = rideRequestRepository.findByRideId(ride.getId());
         for (RideRequest rideRequest1 : rideRequests) {
