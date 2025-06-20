@@ -26,7 +26,7 @@ interface IRideRequest {
 
 interface IPassenger {
     address: string;
-    passenger: User;
+    name: string;
 };
 
 
@@ -116,22 +116,36 @@ const PassengerList = ({ ride }: { ride: IRide | null }) => {
         const fetchPassengers = async () => {
             const response = await axios.get(`http://127.0.0.1:8080/api/rides/passengers/${ride?.id}`);
             if (response.status === 200) {
-                setPassengers(response.data as IPassenger[]);
-                console.log(response.data);
-                console.log(passengers);
+                const mappedPassengers = (response.data as any[]).map((item) => ({
+                    ...item.passenger,
+                    address: item.address,
+                }));
+                setPassengers(mappedPassengers);
+                console.log(mappedPassengers);
             }
         };
         fetchPassengers();
     }, []);
 
     return (
-        <div>
-            <h2>Passageiros</h2>
-            {/* <ul>
-                {passengers.map((passenger) => (
-                    <li key={passenger>{passenger.address}</li>
-                ))}
-            </ul> */}
+        <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-4 w-full">
+            <Users className="w-6 h-6 text-indigo-600 mt-1" />
+            <div>
+                <p className="text-sm font-medium text-gray-500">Passageiros</p>
+                <ul className="space-y-2">
+                    {passengers.map((passenger) => (
+                        <li
+                            key={passenger.name}
+                            className="flex items-center justify-between bg-gray-100 rounded-md px-4 py-2"
+                        >
+                            <div className="flex flex-col w-full">
+                                <p className="font-medium">{passenger.name}</p>
+                                <p className="text-gray-600">{passenger.address}</p>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 }
@@ -279,12 +293,13 @@ export default function RidePage() {
                                 ) : null}
 
                                 {ride?.driver.name === user?.name && (
-                                    <RideRequestList rideRequest={rideRequest} />
+                                    <PassengerList ride={ride} />
                                 )}
 
                                 {ride?.driver.name === user?.name && (
-                                    <PassengerList ride={ride} />
+                                    <RideRequestList rideRequest={rideRequest} />
                                 )}
+
 
                             </div>
 
