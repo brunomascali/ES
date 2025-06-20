@@ -45,7 +45,7 @@ public class UserInitializer implements CommandLineRunner {
              driver1.setEmail("bmvolkmer@inf.ufrgs.br");
              driver1.setCpf("11111111111");
              driver1.setDateOfBirth(dob);
-             driver1.setRoles(Set.of(passengerRole, driverRole, adminRole));
+             driver1.setRoles(Set.of(passengerRole, adminRole));
              userRepository.save(driver1);
 
             // Usuario não cadastrado como motorista mas possui CNH

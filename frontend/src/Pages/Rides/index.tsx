@@ -3,7 +3,8 @@ import RideCard from "../../components/RideCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-export interface Ride { 
+export interface IRide { 
+    id: string,
     driver: string,
     startAddress: string,
     latitude: number,
@@ -15,8 +16,8 @@ export interface Ride {
     price: number,
 }
 
-export default function Caronas() {
-    const [rides, setRides] = useState<Ride[]>([]);
+export default function Rides() {
+    const [rides, setRides] = useState<IRide[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -31,7 +32,7 @@ export default function Caronas() {
                         driver: ride['driver']['name'],
                         date: ride['date'],
                         arrivalTime: ride['arrivalTime']
-                    })) as Ride[];
+                    })) as IRide[];
                     setRides(rides);
                 }
             } catch (error) {
@@ -83,6 +84,7 @@ export default function Caronas() {
                             {rides.map((ride, index) => (
                                 <RideCard 
                                     key={ride.driver + ride.date + ride.arrivalTime + index}
+                                    id={ride.id}
                                     driver={ride.driver}
                                     startAddress={ride.startAddress}
                                     latitude={ride.latitude}
