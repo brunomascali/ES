@@ -1,8 +1,8 @@
 import { Calendar, CircleDollarSign, Clock12, User, Users } from "lucide-react";
-import type { Ride } from "../Pages/Rides";
+import type { IRide } from "../Pages/Rides";
 import Minimap from "./Minimap";
 
-export default function RideCard(ride: Ride) {
+export default function RideCard(ride: IRide) {
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('pt-BR');
@@ -42,7 +42,7 @@ export default function RideCard(ride: Ride) {
                         </div>
 
                         <div className="pt-2">
-                            <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md cursor-pointer">
+                            <button onClick={() => window.location.href = `/caronas/${ride.id}`} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md cursor-pointer">
                                 Ver detalhes
                             </button>
                         </div>

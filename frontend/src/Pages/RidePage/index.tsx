@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Ride } from "../Rides";
+import type { IRide } from "../Rides";
 import axios from "axios";
 import TopMenu from "../../components/TopMenu";
 import Minimap from "../../components/Minimap";
@@ -8,67 +8,81 @@ import AvailableSeatsIcons from "../../components/AvailableSeatsIcons";
 
 export default function RidePage() {
     const { id } = useParams<{ id: string }>();
-    const [ride, setRide] = useState<Ride | null>(null);
+    const [ride, setRide] = useState<IRide | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchRide = async () => {
-            const rideResponse = await axios.get(`http://localhost:8080/api/rides/${id}`);
-            if (rideResponse.status === 200) {
-                const rideData = rideResponse.data as Ride;
-                console.log(rideData);
-                setRide(rideData);
+            try {
+                const rideResponse = await axios.get(`http://127.0.0.1:8080/api/rides/${id}`);
+                if (rideResponse.status === 200) {
+                    setRide(rideResponse.data as IRide);
+                }
+            } catch (error) {
+                // Optionally handle error
+            } finally {
+                setLoading(false);
             }
-            else {
-                console.log("Erro ao buscar carona");
-            }
-        }
+        };
         fetchRide();
-    }, []);
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div>
+                <TopMenu activePage="caronas" />
+                <div className="container mx-auto py-8 px-4">
+                    <div className="flex justify-center items-center min-h-64">
+                        <div className="text-center">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                            <p className="text-gray-600 text-lg">Carregando carona...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div>
             <TopMenu activePage="caronas" />
-            <div className="container py-5">
-                <h1 className="text-center">Detalhes da Carona de MOTORISTA</h1>
-                <div className="row py-5">
-                    <div className="col-md-6 text-lg">
-                        <p style={{ fontSize: "1.5rem" }}>{ride?.date}</p>
-                        <p style={{ fontSize: "1.5rem" }}>{ride?.arrivalTime}</p>
-                        <p style={{ fontSize: "1.5rem" }}>R$ {ride?.price.toFixed(2)}</p>
-                        <p style={{ fontSize: "1.5rem" }}>{ride?.availableSeats} Vagas Disponíveis</p>
-                        <div style={{ fontSize: "1.5rem" }}>
-                            <AvailableSeatsIcons availableSeats={ride?.availableSeats || 0} />
-                        </div>
-                        <p style={{ fontSize: "1.5rem" }} className="text-lg">{ride?.description}</p>
-
-                        <button className="btn btn-primary" style={{ fontSize: "1.5rem" }}
-                            data-bs-toggle="modal" data-bs-target="#exampleModal"
-                        >Entrar na Carona</button>
-
-                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            Launch demo modal
-                        </button>
-
-                        <div className="modal fade" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div className="modal-dialog">
-                                    <div className="modal-content">
-                                    <div className="modal-header">
-                                        <h5 className="modal-title" id="exampleModalLabel">Modal title</h5>
-                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div className="modal-body">
-                                        ...
-                                    </div>
-                                    <div className="modal-footer">
-                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="button" className="btn btn-primary">Save changes</button>
-                                    </div>
+            <div className="container mx-auto py-8 px-4">
+                <div className="max-w-6xl mx-auto">
+                    <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">
+                        Detalhes da Carona
+                    </h1>
+                    <div className="bg-white rounded-lg shadow-md p-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                            <div className="space-y-6">
+                                <p className="text-lg text-gray-700 font-medium">
+                                    <span className="block mb-1">Data:</span> {ride?.date ? new Date(ride.date).toLocaleDateString('pt-BR') : ""}
+                                </p>
+                                <p className="text-lg text-gray-700 font-medium">
+                                    <span className="block mb-1">Horário de chegada:</span> {ride?.arrivalTime}
+                                </p>
+                                <p className="text-lg text-gray-700 font-medium">
+                                    <span className="block mb-1">Preço:</span> R$ {ride?.price.toFixed(2)}
+                                </p>
+                                <p className="text-lg text-gray-700 font-medium">
+                                    <span className="block mb-1">Vagas Disponíveis:</span> {ride?.availableSeats}
+                                </p>
+                                <p className="text-lg text-gray-700 font-medium">
+                                    <span className="block mb-1">Descrição:</span> {ride?.description}
+                                </p>
+                                <button
+                                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md cursor-pointer mt-4"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal"
+                                >
+                                    Entrar na Carona
+                                </button>
+                            </div>
+                            <div className="flex justify-center items-start">
+                                <div className="bg-gray-100 rounded-lg overflow-hidden w-full h-80 flex items-center justify-center">
+                                    <Minimap width={640} height={320} address={ride?.startAddress || ""} />
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="col-md-6">
-                        {/* <Minimap width={600} height={480} address={ride?.startingAddress || ""} /> */}
                     </div>
                 </div>
             </div>

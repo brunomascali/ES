@@ -81,8 +81,6 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-
-
     @PostMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody SignupRequestDTO signupRequest) {
         // A verificação da checagem de email já está implementada na função de verificação
