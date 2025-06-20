@@ -13,19 +13,19 @@ type OfferRideData = {
     arrivalTime: string, 
     description: string,
     price: number,
-}
+};
 
 export default function OfferRide() {
     const { user } = useContext(AuthContext);
     const [offerRideData, setOfferRideData] = useState<OfferRideData>({
         driverCPF: user?.cpf || "",
-        startingAddress: "Avenida Ipiranga 1500, Porto Alegre",
+        startingAddress: "Avenida do Forte 1500 Porto Alegre RS",
         latitude: 0,
         longitude: 0,
         availableSeats: 3,
         date: new Date().toISOString().split('T')[0],
         arrivalTime: "10:00",
-        description: "",
+        description: "A -> B -> C -> D",
         price: 5.0,
     });
 
@@ -39,14 +39,13 @@ export default function OfferRide() {
         if (coordinatesResponse.status === 200) {
             const updatedData = { 
                 ...offerRideData, 
-                startingAddress: coordinatesResponse.data[0].display_name, 
                 latitude: coordinatesResponse.data[0].lat, 
                 longitude: coordinatesResponse.data[0].lon,
             };
             setOfferRideData(updatedData);
             console.log(updatedData);
         }
-    }
+    };
 
     const handleOfferRideSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -67,7 +66,7 @@ export default function OfferRide() {
         else if (offerRideResponse.status === 400) {
             alert(offerRideResponse.data);
         }
-    }
+    };
 
     return (
         <div>

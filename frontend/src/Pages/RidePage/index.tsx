@@ -71,7 +71,7 @@ export default function RidePage() {
                             Detalhes da Carona
                         </h1>
                         <p className="text-lg text-gray-600">
-                            Oferecida por <span className="font-semibold text-indigo-600">{ride?.driver.name}</span>
+                            Oferecida por <span className="font-semibold text-indigo-600">{ride?.driver.name === user?.name ? "Você" : ride?.driver.name}</span>
                         </p>
                     </div>
 
@@ -152,7 +152,7 @@ export default function RidePage() {
                                     data-bs-target="#exampleModal"
                                 >
                                     <Users className="w-5 h-5" />
-                                    <span>Pedir Carona</span>
+                                    <span>{ride?.driver.name === user?.name ? "Cancelar Carona" : "Pedir Carona"}</span>
                                 </button>
                             </div>
 
