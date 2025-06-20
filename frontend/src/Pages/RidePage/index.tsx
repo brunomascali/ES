@@ -4,24 +4,29 @@ import type { IRide } from "../Rides";
 import axios from "axios";
 import TopMenu from "../../components/TopMenu";
 import Minimap from "../../components/Minimap";
-import { AuthContext } from "../../context/Auth";
+import { AuthContext, type User } from "../../context/Auth";
 import { Button } from "../../components/ui/button";
 import { Calendar, Clock, DollarSign, Users, MapPin, FileText, Car } from "lucide-react";
 
 interface IDriverInfo {
     id: string;
     driver: {
-        name:string;
+        name: string;
     };
     plate: string;
     color: string;
-    model: string; 
+    model: string;
 };
 
 interface IRideRequest {
     rideId: string;
     userCPF: string;
     userAddress: string;
+};
+
+interface IPassenger {
+    address: string;
+    passenger: User;
 };
 
 
@@ -74,14 +79,59 @@ const RequestRideForm = ({ ride }: { ride: IRide | null }) => {
 }
 
 const RideRequestList = ({ rideRequest }: { rideRequest: IRideRequest[] }) => {
+
+    const handleAcceptRide = async (rideId: string, userAddress: string, userCPF: string) => {
+        const rideRequest: IRideRequest = {
+            rideId: rideId,
+            userCPF: userCPF,
+            userAddress: userAddress,
+        };
+        const response = await axios.post(`http://127.0.0.1:8080/api/rides/acceptPassenger`, rideRequest);
+        if (response.status === 200) {
+            alert("Carona aceita com sucesso!");
+        }
+    }
+
     return (
         <div>
             <h2>Solicitações de Carona</h2>
             <ul>
                 {rideRequest.map((request) => (
-                    <li key={request.rideId}>{request.userAddress}</li>
+
+                    <div className="flex gap-4">
+                        <li key={request.rideId}>{request.userAddress}</li>
+                        <Button onClick={() => handleAcceptRide(request.rideId, request.userAddress, request.userCPF)} className="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2">Aceitar Carona</Button>
+                        <Button className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2">Rejeitar Carona</Button>
+                    </div>
                 ))}
             </ul>
+        </div>
+    );
+}
+
+const PassengerList = ({ ride }: { ride: IRide | null }) => {
+    const [passengers, setPassengers] = useState<IPassenger[]>([]);
+
+    useEffect(() => {
+        const fetchPassengers = async () => {
+            const response = await axios.get(`http://127.0.0.1:8080/api/rides/passengers/${ride?.id}`);
+            if (response.status === 200) {
+                setPassengers(response.data as IPassenger[]);
+                console.log(response.data);
+                console.log(passengers);
+            }
+        };
+        fetchPassengers();
+    }, []);
+
+    return (
+        <div>
+            <h2>Passageiros</h2>
+            {/* <ul>
+                {passengers.map((passenger) => (
+                    <li key={passenger>{passenger.address}</li>
+                ))}
+            </ul> */}
         </div>
     );
 }
@@ -206,13 +256,13 @@ export default function RidePage() {
                                     </div>
                                 </div>
 
-                                    <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-4">
-                                        <Car className="w-6 h-6 text-indigo-600 mt-1" />
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-500">Veículo</p>
-                                            <p className="text-lg font-semibold text-gray-900">{driverInfo?.model} {driverInfo?.color} - {driverInfo?.plate}</p>
-                                        </div>
+                                <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-4">
+                                    <Car className="w-6 h-6 text-indigo-600 mt-1" />
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-500">Veículo</p>
+                                        <p className="text-lg font-semibold text-gray-900">{driverInfo?.model} {driverInfo?.color} - {driverInfo?.plate}</p>
                                     </div>
+                                </div>
 
                                 {ride?.description && (
                                     <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-4">
@@ -226,10 +276,14 @@ export default function RidePage() {
 
                                 {ride?.driver.name !== user?.name ? (
                                     <RequestRideForm ride={ride} />
-                                ) : null }
+                                ) : null}
 
                                 {ride?.driver.name === user?.name && (
                                     <RideRequestList rideRequest={rideRequest} />
+                                )}
+
+                                {ride?.driver.name === user?.name && (
+                                    <PassengerList ride={ride} />
                                 )}
 
                             </div>
