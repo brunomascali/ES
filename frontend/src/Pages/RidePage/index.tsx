@@ -16,6 +16,55 @@ interface IDriverInfo {
     plate: string;
     color: string;
     model: string; 
+};
+
+
+const RequestRideForm = ({ ride }: { ride: IRide | null }) => {
+    const { user } = useContext(AuthContext);
+    const [request, setRequest] = useState({
+        rideId: ride!.id,
+        userCPF: user?.cpf,
+        userAddress: "",
+    });
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post("http://127.0.0.1:8080/api/rides/requestRide", request);
+            if (response.status === 200) {
+                alert("Carona solicitada com sucesso!");
+            }
+        } catch (error) {
+            console.error("Erro ao solicitar carona:", error);
+        }
+    }
+
+    return (
+        <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit}>
+            <label htmlFor="address" className="block text-lg font-medium text-gray-700">
+                Endereço de Embarque
+            </label>
+            <input
+                type="text"
+                id="address"
+                name="address"
+                value={request.userAddress}
+                onChange={(e) => setRequest({ ...request, userAddress: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Digite seu endereço para embarque"
+                required
+            />
+            <Button
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2"
+                type="submit"
+            >
+                <Users className="w-5 h-5" />
+                <span>Pedir Carona</span>
+            </Button>
+        </form>
+    );
 }
 
 export default function RidePage() {
@@ -146,14 +195,10 @@ export default function RidePage() {
                                     </div>
                                 )}
 
-                                <button
-                                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#exampleModal"
-                                >
-                                    <Users className="w-5 h-5" />
-                                    <span>{ride?.driver.name === user?.name ? "Cancelar Carona" : "Pedir Carona"}</span>
-                                </button>
+                                {ride?.driver.name !== user?.name ? (
+                                    <RequestRideForm ride={ride} />
+                                ) : null }
+
                             </div>
 
                             <div className="flex justify-center items-start">
