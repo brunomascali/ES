@@ -18,6 +18,12 @@ interface IDriverInfo {
     model: string; 
 };
 
+interface IRideRequest {
+    rideId: string;
+    userCPF: string;
+    userAddress: string;
+};
+
 
 const RequestRideForm = ({ ride }: { ride: IRide | null }) => {
     const { user } = useContext(AuthContext);
@@ -67,10 +73,24 @@ const RequestRideForm = ({ ride }: { ride: IRide | null }) => {
     );
 }
 
+const RideRequestList = ({ rideRequest }: { rideRequest: IRideRequest[] }) => {
+    return (
+        <div>
+            <h2>Solicitações de Carona</h2>
+            <ul>
+                {rideRequest.map((request) => (
+                    <li key={request.rideId}>{request.userAddress}</li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+
 export default function RidePage() {
     const { user } = useContext(AuthContext);
     const { id } = useParams<{ id: string }>();
     const [ride, setRide] = useState<IRide | null>(null);
+    const [rideRequest, setRideRequest] = useState<IRideRequest[]>([]);
     const [driverInfo, setDriverInfo] = useState<IDriverInfo | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -92,6 +112,15 @@ export default function RidePage() {
             }
         };
         fetchRide();
+
+        const fetchRideRequests = async () => {
+            const response = await axios.get(`http://127.0.0.1:8080/api/rides/requests/${id}`);
+            if (response.status === 200) {
+                setRideRequest(response.data as IRideRequest[]);
+                console.log(response.data);
+            }
+        };
+        fetchRideRequests();
     }, [id]);
 
     if (loading) {
@@ -198,6 +227,10 @@ export default function RidePage() {
                                 {ride?.driver.name !== user?.name ? (
                                     <RequestRideForm ride={ride} />
                                 ) : null }
+
+                                {ride?.driver.name === user?.name && (
+                                    <RideRequestList rideRequest={rideRequest} />
+                                )}
 
                             </div>
 
