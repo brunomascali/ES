@@ -5,6 +5,8 @@ import { AuthContext } from "../context/Auth";
 export default function TopMenu() {
     const { Logout, user } = useContext(AuthContext);
 
+    const isVerified = !user?.roles.includes("NOT_VERIFIED_USER");
+
     const activePage: string = window.location.pathname.split('/')[1];
 
     return (
@@ -23,6 +25,7 @@ export default function TopMenu() {
                     >
                         Início
                     </a>
+                    { isVerified && (
                     <a
                         href="/caronas"
                         className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === 'caronas'
@@ -30,8 +33,9 @@ export default function TopMenu() {
                             : 'text-gray-700 hover:bg-indigo-100 hover:text-indigo-700'
                             }`}
                     >
-                        Caronas
-                    </a>
+                            Caronas
+                        </a>
+                    )}
                     <a
                         href="#"
                         className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === 'perfil'
