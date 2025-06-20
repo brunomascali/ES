@@ -3,14 +3,14 @@ package com.trabalho.EngSoft.Service;
 import com.trabalho.EngSoft.DTO.RideHistoryItemDTO;
 import com.trabalho.EngSoft.Model.Ride;
 import com.trabalho.EngSoft.Model.User;
-import com.trabalho.EngSoft.Model.Passenger; // Importe Passenger
+import com.trabalho.EngSoft.Model.Passenger; 
 import com.trabalho.EngSoft.Repository.RideRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors; // Mantenha este import
+import java.util.stream.Collectors; 
 
 @Service
 public class RideService {
@@ -19,7 +19,7 @@ public class RideService {
     private RideRepository rideRepository;
 
     public List<RideHistoryItemDTO> getUserRideHistory(User user) {
-        // Usa o método sintetizado para buscar todas as caronas completas do usuário
+        // método para buscar todas as caronas do usuário
         List<Ride> relevantRides = rideRepository.findByUserAsDriverOrPassengerAndRideComplete(user, true);
 
         List<RideHistoryItemDTO> history = new ArrayList<>();
