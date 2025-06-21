@@ -98,7 +98,7 @@ export default function RidePage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="fixed inset-0 min-h-screen w-full bg-gray-50 flex flex-col">
             <TopMenu />
             <div className="container mx-auto py-8 px-4">
                 <div className="max-w-6xl mx-auto">
@@ -205,8 +205,8 @@ export default function RidePage() {
                             </div>
 
                             <div className="flex justify-center items-start">
-                                <div className="bg-gray-100 rounded-lg overflow-hidden w-full h-80">
-                                    <Minimap width={640} height={320} address={ride?.startAddress || ""} />
+                                <div className="bg-gray-100 rounded-lg overflow-hidden w-full h-full">
+                                    <Minimap address={ride?.startAddress || ""} />
                                 </div>
                             </div>
                         </div>

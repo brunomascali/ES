@@ -25,6 +25,15 @@ export default function OfferRide() {
             return;
         }
         
+    };
+
+    const handleOfferRideSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (offerRideData.date <= new Date().toISOString().split('T')[0]) {
+            alert("Data não pode ser anterior à data atual");
+            return;
+        }
+
         const coordinatesResponse = await getCoordinates(offerRideData.startingAddress);
         if (coordinatesResponse) {
             const updatedData = { 
@@ -33,13 +42,8 @@ export default function OfferRide() {
                 longitude: coordinatesResponse.lon,
             };
             setOfferRideData(updatedData);
-        }
-    };
-
-    const handleOfferRideSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (offerRideData.date <= new Date().toISOString().split('T')[0]) {
-            alert("Data não pode ser anterior à data atual");
+        } else {
+            alert("Erro ao buscar coordenadas do endereço");
             return;
         }
 
@@ -58,7 +62,7 @@ export default function OfferRide() {
     };
 
     return (
-        <div>
+        <div className="fixed inset-0 min-h-screen w-full bg-gray-50 flex flex-col">
             <TopMenu />
             <div className="container mx-auto py-8 px-4">
                 <div className="flex justify-center">
@@ -122,42 +126,6 @@ export default function OfferRide() {
                                 value={offerRideData.startingAddress} 
                                 onChange={(e) => setOfferRideData({ ...offerRideData, startingAddress: e.target.value })} 
                             />
-                            <button 
-                                type="button" 
-                                onClick={handleAddressSubmit} 
-                                className="cursor-pointer w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-lg"
-                            >
-                                Buscar
-                            </button>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label htmlFor="latitude" className="block text-lg font-medium text-gray-700 mb-2">
-                                    Latitude
-                                </label>
-                                <input
-                                    disabled
-                                    type="text" 
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-gray-50 text-gray-500" 
-                                    id="latitude" 
-                                    value={offerRideData.latitude} 
-                                    onChange={(e) => setOfferRideData({ ...offerRideData, latitude: parseFloat(e.target.value) })} 
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="longitude" className="block text-lg font-medium text-gray-700 mb-2">
-                                    Longitude
-                                </label>
-                                <input
-                                    disabled
-                                    type="text" 
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-gray-50 text-gray-500" 
-                                    id="longitude" 
-                                    value={offerRideData.longitude} 
-                                    onChange={(e) => setOfferRideData({ ...offerRideData, longitude: parseFloat(e.target.value) })} 
-                                />
-                            </div>
                         </div>
                         
                         <div>

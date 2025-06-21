@@ -88,7 +88,7 @@ export default function RideCard(ride: IRide) {
 
                     <div className="lg:w-80">
                         <div className="bg-gray-100 rounded-lg overflow-hidden h-48 lg:h-full">
-                            <Minimap width={320} height={240} address={ride.startAddress} />
+                            <Minimap address={ride.startAddress} />
                         </div>
                     </div>
                 </div>

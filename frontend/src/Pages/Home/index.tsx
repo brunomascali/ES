@@ -32,14 +32,13 @@ export default function Home() {
     ]
 
     return (
-        <div>
+        <div className="fixed inset-0 min-h-screen w-full bg-gray-50 flex flex-col">
             <TopMenu />
-            <div className="container mx-auto py-8 px-4">
-                <div className="flex flex-col items-center space-y-6">
+            <div className="flex flex-1 items-center justify-center px-4">
+                <div className="flex flex-col items-center space-y-6 w-full">
                     <h1 className="text-4xl font-bold text-gray-900 text-center">
                         Bem-vindo de volta, {user?.name}!
                     </h1>
-
                     <div className="flex flex-col gap-4 w-full max-w-md">
                         {
                             buttons.map((button) => (
@@ -47,6 +46,7 @@ export default function Home() {
                                     <Button
                                         className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-5 px-10 rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl cursor-pointer"
                                         onClick={button.onClick}
+                                        key={button.text}
                                     >
                                         {button.text}
                                     </Button>

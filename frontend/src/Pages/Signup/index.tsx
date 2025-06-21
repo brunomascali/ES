@@ -151,7 +151,7 @@ export default function Signup() {
                         />
                         <div className="text-xs text-gray-500 mt-1">Você deve ter pelo menos 18 anos</div>
                     </div>
-                    <Button type="submit" className="w-full">Cadastrar</Button>
+                    <Button type="submit" className="cursor-pointer w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2">Cadastrar</Button>
                 </form>
                 <div className="mt-6 text-center w-full">
                     <a href="/" className="text-indigo-600 hover:underline text-sm font-medium">

@@ -48,7 +48,7 @@ export default function Rides() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="fixed inset-0 min-h-screen w-full bg-gray-50 flex flex-col">
             <TopMenu />
             <div className="container mx-auto py-8 px-4">
                 <div className="max-w-6xl mx-auto">
