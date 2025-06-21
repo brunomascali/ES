@@ -6,13 +6,13 @@ import TopMenu from "../../components/TopMenu";
 import Minimap from "../../components/Minimap";
 import { AuthContext, type User } from "../../context/Auth";
 import { Button } from "../../components/ui/button";
-import { Calendar, Clock, DollarSign, Users, MapPin, FileText, Car } from "lucide-react";
+import { Calendar, Clock, DollarSign, Users, MapPin, FileText, Car, CreditCard } from "lucide-react";
 
-const Block = ({ title, children, icon }: { title: string, children: React.ReactNode, icon: React.ReactNode }) => {
+export const Block = ({ title, children, icon }: { title: string, children: React.ReactNode, icon?: React.ReactNode }) => {
     return (
         <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-4 w-full">
             <div className="flex items-start space-x-4 w-full">
-                <p className="text-sm font-medium text-gray-500">{icon}</p>
+                {icon && <p className="text-sm font-medium text-gray-500">{icon}</p>}
                 <div className="flex flex-col w-full">
                     <p className="text-sm font-medium text-gray-500 mb-2">{title}</p>
                     {children}
@@ -120,26 +120,28 @@ const RideRequestList = ({ rideRequest }: { rideRequest: IRideRequest[] }) => {
 
     return (
         <Block title="Solicitações de Carona" icon={<Users className="w-6 h-6 text-indigo-600 mt-1" />}>
-            <div className="space-y-3 mt-2">
+            <div className="space-y-4 mt-2">
                 {rideRequest.map((request) => (
                     <div
                         key={request.rideId}
-                        className="rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+                        className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden hover:border-gray-200 transition-colors duration-200"
                     >
-                        <div className="p-4 text-center">
-                            <p className="text-lg text-gray-800">{request.userAddress}</p>
+                        <div className="px-6 py-4">
+                            <p className="text-lg font-medium text-gray-900 text-center">{request.userAddress}</p>
                         </div>
-                        <div className="grid grid-cols-2 border-t border-gray-100">
+                        <div className="grid grid-cols-2 divide-x divide-gray-100">
                             <Button
                                 onClick={() => handleAcceptRide(request.rideId, request.userAddress, request.userCPF)}
-                                className="cursor-pointer bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-none border-r border-green-800 transition-colors duration-200"
+                                className="cursor-pointer bg-green-500 hover:bg-green-600 text-white font-medium py-3 rounded-none transition-all duration-200 flex items-center justify-center gap-2"
                             >
+                                <Users className="w-4 h-4" />
                                 Aceitar
                             </Button>
                             <Button
                                 onClick={() => handleRejectRide(request.rideId, request.userAddress, request.userCPF)}
-                                className="cursor-pointer bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-none transition-colors duration-200"
+                                className="cursor-pointer bg-red-500 hover:bg-red-600 text-white font-medium py-3 rounded-none transition-all duration-200 flex items-center justify-center gap-2"
                             >
+                                <Users className="w-4 h-4" />
                                 Rejeitar
                             </Button>
                         </div>
@@ -170,19 +172,19 @@ const PassengerList = ({ ride }: { ride: IRide | null }) => {
 
     return (
         <Block title="Passageiros" icon={<Users className="w-6 h-6 text-indigo-600 mt-1" />}>
-                <ul className="space-y-2 w-full">
-                    {passengers.map((passenger) => (
-                        <li
-                            key={passenger.name}
-                            className="flex items-center justify-between bg-gray-100 rounded-md px-4 py-2 w-full"
-                        >
-                            <div className="flex flex-col w-full">
-                                <p className="font-medium">Nome: {passenger.name}</p>
-                                <p className="text-gray-600">Endereço: {passenger.address}</p>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
+            <ul className="space-y-2 w-full">
+                {passengers.map((passenger) => (
+                    <li
+                        key={passenger.name}
+                        className="flex items-center justify-between bg-gray-100 rounded-md px-4 py-2 w-full"
+                    >
+                        <div className="flex flex-col w-full">
+                            <p className="font-medium">Nome: {passenger.name}</p>
+                            <p className="text-gray-600">Endereço: {passenger.address}</p>
+                        </div>
+                    </li>
+                ))}
+            </ul>
         </Block>
     );
 }
@@ -190,8 +192,10 @@ const PassengerList = ({ ride }: { ride: IRide | null }) => {
 export default function RidePage() {
     const { user } = useContext(AuthContext);
     const { id } = useParams<{ id: string }>();
-    const [ride, setRide] = useState<IRide | null>(null);
+    const [ride, setRide] = useState<IRide>();
     const [rideRequest, setRideRequest] = useState<IRideRequest[]>([]);
+    const [isPassenger, setIsPassenger] = useState(false);
+    const [isDriver, setIsDriver] = useState(false);
     const [driverInfo, setDriverInfo] = useState<IDriverInfo | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -200,9 +204,12 @@ export default function RidePage() {
             try {
                 const rideResponse = await axios.get(`http://127.0.0.1:8080/api/rides/${id}`);
                 const driverInfoResponse = await axios.get(`http://127.0.0.1:8080/api/driver/${rideResponse.data.driver.id}`);
+
                 if (rideResponse.status === 200 && driverInfoResponse.status === 200) {
                     setRide(rideResponse.data as IRide);
                     setDriverInfo(driverInfoResponse.data as IDriverInfo);
+                    setIsPassenger(rideResponse.data.passengers.some((passenger: IPassenger) => passenger.passenger.cpf === user?.cpf));
+                    setIsDriver(rideResponse.data.driver.cpf === user?.cpf);
                 } else {
                     throw new Error("Failed to fetch ride or driver info");
                 }
@@ -299,17 +306,48 @@ export default function RidePage() {
                                     </Block>
                                 )}
 
-                                {ride?.driver.name !== user?.name ? (
-                                    <RequestRideForm ride={ride} />
-                                ) : null}
+                                {isDriver && (
+                                    <>
+                                        <PassengerList ride={ride!} />
+                                        <RideRequestList rideRequest={rideRequest} />
+                                    </>
+                                )}
 
-                                {ride?.driver.name === user?.name && (
+                                { !isPassenger && !isDriver && ride?.availableSeats! > 0 && (
+                                    <RequestRideForm ride={ride!} />
+                                )}
+
+                                {/* {ride?.driver.name !== user?.name && !isPassenger ? (
+                                    <RequestRideForm ride={ride} />
+                                ) : (
+                                    <>
+                                        <span className="text-lg font-semibold text-gray-900">
+                                            Você já é passageiro dessa carona
+                                        </span>
+                                        <Block title="Chave pix" icon={<CreditCard className="w-6 h-6 text-indigo-600 mt-1" />}>
+                                            <p className="text-lg font-semibold text-gray-900">
+                                                Chave pix: {ride?.driver.email}
+                                            </p>
+                                            <form>
+                                                <Button
+                                                    className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2"
+                                                    type="submit"
+                                                >
+                                                    <Users className="w-5 h-5" />
+                                                    <span>Notificar pagamento</span>
+                                                </Button>
+                                            </form>
+                                        </Block>
+                                    </>
+                                )} */}
+
+                                {/* {ride?.driver.name === user?.name && (
                                     <PassengerList ride={ride} />
                                 )}
 
                                 {ride?.driver.name === user?.name && (
                                     <RideRequestList rideRequest={rideRequest} />
-                                )}
+                                )} */}
 
                             </div>
 

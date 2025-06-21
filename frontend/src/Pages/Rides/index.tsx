@@ -3,6 +3,12 @@ import RideCard from "../../components/RideCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Users } from "lucide-react";
+import type { User } from "../../context/Auth";
+
+export interface IPassenger {
+    address: string,
+    passenger: User 
+}
 
 export interface IRide { 
     id: string,
@@ -15,10 +21,12 @@ export interface IRide {
     arrivalTime: string, 
     description: string,
     price: number,
+    passengers: IPassenger[]
 }
 
 export default function Rides() {
     const [rides, setRides] = useState<IRide[]>([]);
+    const [isPassenger, setIsPassenger] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -104,6 +112,7 @@ export default function Rides() {
                                     arrivalTime={ride.arrivalTime}
                                     description={ride.description}
                                     price={ride.price}
+                                    passengers={ride.passengers}
                                 />
                             ))}
                         </div>

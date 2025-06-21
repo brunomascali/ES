@@ -179,6 +179,7 @@ public class RideController {
         passenger.setPassenger(userToAccept.get());
 
         ride.getPassengers().add(passenger);
+        ride.setAvailableSeats(ride.getAvailableSeats() - 1);
         rideRepository.save(ride);
 
         List<RideRequest> rideRequests = rideRequestRepository.findByRideId(ride.getId());

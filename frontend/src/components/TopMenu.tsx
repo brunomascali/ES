@@ -70,7 +70,7 @@ export default function TopMenu() {
                 </div>
                 <button
                     onClick={Logout}
-                    className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors text-lg"
+                    className="cursor-pointer bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors text-lg"
                 >
                     Sair
                 </button>

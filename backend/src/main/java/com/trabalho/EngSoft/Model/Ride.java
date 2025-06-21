@@ -81,7 +81,7 @@ public class Ride {
     }
 
     public boolean full(){
-        return passengers.size() == availableSeats;
+        return availableSeats == 0;
     }
 
     public boolean isUserInRide(User user){

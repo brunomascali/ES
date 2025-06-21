@@ -61,7 +61,7 @@ export default function Login() {
                             required
                         />
                     </div>
-                    <Button type="submit" className="w-full">Entrar</Button>
+                    <Button type="submit" className="cursor-pointer w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2">Entrar</Button>
                 </form>
                 {invalidLogin && (
                     <Alert variant="destructive" className="mt-6 w-full">

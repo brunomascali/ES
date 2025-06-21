@@ -140,7 +140,7 @@ export default function OfferRide() {
                             <button 
                                 type="button" 
                                 onClick={handleAddressSubmit} 
-                                className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-lg"
+                                className="cursor-pointer w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-lg"
                             >
                                 Buscar
                             </button>
@@ -215,7 +215,7 @@ export default function OfferRide() {
                         
                         <button 
                             type="submit" 
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-lg"
+                            className="cursor-pointer w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-lg"
                         >
                             Oferecer Carona
                         </button>
