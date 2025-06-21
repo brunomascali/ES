@@ -1,18 +1,11 @@
 import { useState } from "react";
 import logo from '../../assets/logo.png';
-import axios from "axios";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
-
-type SignupFormData = {
-    username: string;
-    password: string;
-    confirmPassword: string;
-    email: string;
-    cpf: string;
-    dateOfBirth: string;
-}
+import type { SignupFormData } from "../../types/SignUpFormData";
+import api from "../../services/api";
+import { validateSignupForm } from "../../services/SignUpService";
 
 export default function Signup() {
     const [input, setInput] = useState<SignupFormData>({
@@ -26,43 +19,24 @@ export default function Signup() {
     const [errors, setErrors] = useState<string[]>([]); 
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const validateSignupForm = (input: SignupFormData) => {
-        let errors = [];
-        if (input.password !== input.confirmPassword) {
-            errors.push('As senhas não coincidem');
-        }
-        if (!input.email.endsWith('ufrgs.br')) {
-            errors.push('O email deve ser do domínio ufrgs.br');
-        }
-        if (new Date(input.dateOfBirth) > new Date()) {
-            errors.push('A data de nascimento não pode ser maior que a data atual');
-        }
-        if (new Date(input.dateOfBirth) > new Date(new Date().setFullYear(new Date().getFullYear() - 18))) {
-            errors.push('Você deve ter pelo menos 18 anos');
-        }
-        if (input.cpf.length !== 11) {
-            errors.push('O CPF deve ter 11 dígitos');
-        }
-        return errors;
-    }
 
     const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setErrors([]);
         setIsSuccess(false);
 
-        let errors = validateSignupForm(input);
+        const errors = validateSignupForm(input);
 
         if (errors.length === 0) {
             try {
-                const SignupRequest = {
+                const signupRequest = {
                     name: input.username,
                     password: input.password,
                     email: input.email,
                     cpf: input.cpf,
                     dateOfBirth: input.dateOfBirth,
                 }
-                const response = await axios.post('http://127.0.0.1:8080/api/users/create', SignupRequest);
+                const response = await api.post('/users/create', signupRequest);
 
                 if (response.status === 200) {
                     setIsSuccess(true);

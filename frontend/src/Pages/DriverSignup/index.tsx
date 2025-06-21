@@ -1,32 +1,13 @@
-import axios from "axios";
 import TopMenu from "../../components/TopMenu";
-import { useContext, useState } from "react";
-import { AuthContext } from "../../context/Auth";
+import { useState } from "react";
 import { Button } from "../../components/ui/button";
-
-enum DriverSignupStatus {
-    IDLE = 0,
-    SUCCESS = 1,
-    ERROR = 2,
-}
-
-interface AlterRoleRequest {
-    email: string;
-    role: "DRIVER" | "PASSENGER";
-    action: "add" | "remove";
-}
-
-interface ValidateCnhRequest {
-    cnh: string;
-    cpf: string;
-    plate: string;
-
-    model: string;
-    color: string;
-}
+import { useAuth } from "../../hooks/useAuth";
+import { DriverSignupStatus } from "../../types/enums/DriverSignupStatus";
+import type { ValidateCnhRequest } from "../../types/requests";
+import { handleCnhVerification } from "../../services/driverService";
 
 export default function DriverSignup() {
-    const { user, setUser } = useContext(AuthContext);
+    const { user, setUser } = useAuth();
     const [cnhRequest, setCnhRequest] = useState<ValidateCnhRequest>({
         cnh: "11111111111",
         cpf: user!.cpf,
@@ -35,60 +16,36 @@ export default function DriverSignup() {
         color: "Preto"
     });
     const [errors, setErrors] = useState<string[]>([]);
-    const [driverSignupStatus, setDriverSignupStatus] = useState(DriverSignupStatus.IDLE);
+    const [driverSignupStatus, setDriverSignupStatus] = useState(DriverSignupStatus.Idle);
 
-    const validateCnhForm = (): string[] => {
-        let errors = [];
-        if (cnhRequest.cnh.length !== 11) {
-            errors.push("A CNH deve ter 11 dígitos");
+    const inputs = [
+        {
+            label: "Número da CNH",
+            name: "cnh",
+            value: cnhRequest.cnh,
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setCnhRequest({ ...cnhRequest, cnh: e.target.value }),
+            maxLength: 11
+        },
+        {
+            label: "Placa do veículo",
+            name: "plate",
+            value: cnhRequest.plate,
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setCnhRequest({ ...cnhRequest, plate: e.target.value }),
+            maxLength: 7
+        },
+        {
+            label: "Modelo do veículo",
+            name: "model",
+            value: cnhRequest.model,
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setCnhRequest({ ...cnhRequest, model: e.target.value }),
+        },
+        {
+            label: "Cor do veículo",
+            name: "color",
+            value: cnhRequest.color,
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setCnhRequest({ ...cnhRequest, color: e.target.value }),
         }
-        if (cnhRequest.plate.length !== 7) {
-            errors.push("A placa deve ter 7 caracteres");
-        }
-        if (Array.from(cnhRequest.cnh).some(char => isNaN(Number(char)))) {
-            errors.push("A CNH deve conter apenas números");
-        }
-        return errors;
-    }
-
-    const handleCnhVerification = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        let errors = validateCnhForm();
-        if (errors.length > 0) {
-            setErrors(errors);
-            console.log(errors);
-            return;
-        }
-        setErrors([]);
-        setDriverSignupStatus(DriverSignupStatus.IDLE);
-
-        try {
-            const validateCnhResponse = await axios.post("http://127.0.0.1:8080/api/driver/validate", cnhRequest);
-            if (validateCnhResponse.status === 200) {
-                const alterRoleRequest: AlterRoleRequest = {
-                    email: user!.email,
-                    role: "DRIVER",
-                    action: "add"
-                };
-
-                const alterRoleResponse = await axios.put("http://127.0.0.1:8080/api/role", alterRoleRequest);
-                if (alterRoleResponse.status === 200) {
-                    setDriverSignupStatus(DriverSignupStatus.SUCCESS);
-
-                    setUser(alterRoleResponse.data);
-                    localStorage.setItem('user', JSON.stringify(alterRoleResponse.data));
-                    setTimeout(() => {
-                        window.location.href = "/";
-                    }, 1000);
-                }
-            }
-        } catch (error: any) {
-            if (error.response.status === 404) {
-                setDriverSignupStatus(DriverSignupStatus.ERROR);
-                setErrors(["Informações inválidas"]);
-            }
-        }
-    }
+    ]
 
     return (
         <div>
@@ -99,14 +56,14 @@ export default function DriverSignup() {
                         Cadastro de Motorista
                     </h1>
 
-                    {driverSignupStatus === DriverSignupStatus.SUCCESS && (
+                    {driverSignupStatus === DriverSignupStatus.Success && (
                         <div className="w-full max-w-md bg-green-50 border border-green-200 rounded-lg p-4" role="alert">
                             <p className="text-green-800 font-medium mb-1">CNH verificada com sucesso!</p>
                             <small className="text-green-600">Você será redirecionado para a página inicial em instantes...</small>
                         </div>
                     )}
 
-                    {driverSignupStatus === DriverSignupStatus.ERROR && (
+                    {driverSignupStatus === DriverSignupStatus.Error && (
                         <div className="w-full max-w-md bg-red-50 border border-red-200 rounded-lg p-4" role="alert">
                             <p className="text-red-800 font-medium mb-1">Erro ao verificar CNH!</p>
                         </div>
@@ -120,69 +77,23 @@ export default function DriverSignup() {
                         </div>
                     )}
 
-                    <form onSubmit={handleCnhVerification} className="w-full max-w-md space-y-6">
-                        <div>
-                            <label htmlFor="cnh" className="block text-sm font-medium text-gray-700 mb-2">
-                                Número da CNH
-                            </label>
-                            <input
-                                type="text"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                id="cnh"
-                                name="cnh"
-                                maxLength={11}
-                                placeholder="Digite o número da sua CNH"
-                                value={cnhRequest.cnh}
-                                onChange={e => setCnhRequest({ ...cnhRequest, cnh: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="plate" className="block text-sm font-medium text-gray-700 mb-2">
-                                Placa do veículo
-                            </label>
-                            <input
-                                type="text"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                id="plate"
-                                name="plate"
-                                maxLength={7}
-                                placeholder="ABC1234"
-                                value={cnhRequest.plate}
-                                onChange={e => setCnhRequest({ ...cnhRequest, plate: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="model" className="block text-sm font-medium text-gray-700 mb-2">
-                                Modelo do veículo
-                            </label>
-                            <input
-                                type="text"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                id="model"
-                                name="model"
-                                placeholder="Digite o modelo do seu veículo"
-                                value={cnhRequest.model}
-                                onChange={e => setCnhRequest({ ...cnhRequest, model: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="color" className="block text-sm font-medium text-gray-700 mb-2">
-                                Cor do veículo
-                            </label>
-                            <input
-                                type="text"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                id="color"
-                                name="color"
-                                placeholder="Digite a cor do seu veículo"
-                                value={cnhRequest.color}
-                                onChange={e => setCnhRequest({ ...cnhRequest, color: e.target.value })}
-                                required
-                            />
-                        </div>
+                    <form onSubmit={e => handleCnhVerification(e, cnhRequest, setErrors, setDriverSignupStatus, setUser, user!)} className="w-full max-w-md space-y-6">
+                        {inputs.map((input) => (
+                            <div key={input.name}>
+                                <label htmlFor={input.name} className="block text-sm font-medium text-gray-700 mb-2">{input.label}</label>
+                                <input
+                                    type="text"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    id={input.name}
+                                    name={input.name}
+                                    maxLength={input.maxLength}
+                                    placeholder={input.label}
+                                    value={input.value}
+                                    onChange={input.onChange}
+                                    required={true}
+                                />
+                            </div>
+                        ))}
                         <Button
                             type="submit"
                             className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md cursor-pointer"

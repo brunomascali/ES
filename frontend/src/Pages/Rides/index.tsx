@@ -1,28 +1,9 @@
 import TopMenu from "../../components/TopMenu";
 import RideCard from "../../components/RideCard";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Users } from "lucide-react";
-import type { User } from "../../context/Auth";
-
-export interface IPassenger {
-    address: string,
-    passenger: User 
-}
-
-export interface IRide { 
-    id: string,
-    driver: string,
-    startAddress: string,
-    latitude: number,
-    longitude: number,
-    availableSeats: number,
-    date: string,
-    arrivalTime: string, 
-    description: string,
-    price: number,
-    passengers: IPassenger[]
-}
+import type { IRide } from "../../types/Ride";
+import api from "../../services/api";
 
 export default function Rides() {
     const [rides, setRides] = useState<IRide[]>([]);
@@ -32,20 +13,17 @@ export default function Rides() {
     useEffect(() => {
         const fetchRides = async() => {
             try {
-                const ridesResponse = await axios.get("http://127.0.0.1:8080/api/rides");
+                const ridesResponse = await api.get("/rides");
                 if (ridesResponse.status == 200) {
-                    console.log(ridesResponse.data);
-
-                    const rides = ridesResponse.data.map((ride: any) => ({
+                    const rides: IRide[] = ridesResponse.data.map((ride: any) => ({
                         ...ride,
                         driver: ride['driver'],
                         date: ride['date'],
                         arrivalTime: ride['arrivalTime']
-                    })) as IRide[];
+                    }));
                     setRides(rides);
                 }
             } catch (error) {
-                console.error("Error fetching rides:", error);
             } finally {
                 setLoading(false);
             }

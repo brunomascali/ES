@@ -1,22 +1,12 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import TopMenu from "../../components/TopMenu";
-import { AuthContext } from "../../context/Auth";
-import axios from "axios";
-
-type OfferRideData = {
-    driverCPF: string,
-    startingAddress: string,
-    latitude: number,
-    longitude: number,
-    availableSeats: 1 | 2 | 3,
-    date: string,
-    arrivalTime: string, 
-    description: string,
-    price: number,
-};
+import { useAuth } from "../../hooks/useAuth";
+import type { OfferRideData } from "../../types/OfferRideData";
+import { getCoordinates } from "../../services/coordinatesService";
+import api from "../../services/api";
 
 export default function OfferRide() {
-    const { user } = useContext(AuthContext);
+    const { user } = useAuth();
     const [offerRideData, setOfferRideData] = useState<OfferRideData>({
         driverCPF: user?.cpf || "",
         startingAddress: "Avenida do Forte 1500 Porto Alegre RS",
@@ -35,30 +25,25 @@ export default function OfferRide() {
             return;
         }
         
-        const coordinatesResponse = await axios.get("https://geocode.maps.co/search?q=" + offerRideData.startingAddress + "&api_key=6841a9190344d597744546tmib2caac")
-        if (coordinatesResponse.status === 200) {
+        const coordinatesResponse = await getCoordinates(offerRideData.startingAddress);
+        if (coordinatesResponse) {
             const updatedData = { 
                 ...offerRideData, 
-                latitude: coordinatesResponse.data[0].lat, 
-                longitude: coordinatesResponse.data[0].lon,
+                latitude: coordinatesResponse.lat, 
+                longitude: coordinatesResponse.lon,
             };
             setOfferRideData(updatedData);
-            console.log(updatedData);
         }
     };
 
     const handleOfferRideSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (offerRideData.startingAddress.length === 0) {
-            alert("Endereço não pode ser vazio");
-            return;
-        }
         if (offerRideData.date <= new Date().toISOString().split('T')[0]) {
             alert("Data não pode ser anterior à data atual");
             return;
         }
 
-        const offerRideResponse = await axios.post("http://127.0.0.1:8080/api/rides/create", {
+        const offerRideResponse = await api.post("/rides/create", {
             ...offerRideData,
             price: Number(offerRideData.price),
             date: offerRideData.date,

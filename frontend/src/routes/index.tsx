@@ -1,12 +1,11 @@
-import { useContext } from "react";
-import { AuthContext } from "../context/Auth";
+import { useAuth } from '../hooks/useAuth'
 import UserRoutes from "./UserRoutes";
 import LoggedOutRoutes from "./LoggedOutRoutes";
 
 export default function AppRoutes() {
-    const { signed } = useContext(AuthContext);
+    const { user } = useAuth();
 
     return (
-        signed ? <UserRoutes /> : <LoggedOutRoutes />
+        user ? <UserRoutes /> : <LoggedOutRoutes />
     )
 }

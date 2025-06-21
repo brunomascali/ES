@@ -1,13 +1,13 @@
 import { Calendar, Clock, DollarSign, Users, MapPin } from "lucide-react";
 import type { IPassenger, IRide } from "../Pages/Rides";
 import Minimap from "./Minimap";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../context/Auth";
-import { Block } from "../Pages/RidePage";
+import { useEffect, useState } from "react";
+import { Block } from "../Pages/RideDetails";
 import axios from "axios";
+import { useAuth } from "../hooks/useAuth";
 
 export default function RideCard(ride: IRide) {
-    const { user } = useContext(AuthContext);
+    const { user } = useAuth();
     const [isPassenger, setIsPassenger] = useState(false);
     const [driverRating, setDriverRating] = useState<number>(5.0);
 

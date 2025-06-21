@@ -3,15 +3,14 @@ import Home from "../Pages/Home";
 import Rides from "../Pages/Rides";
 import DriverSignup from "../Pages/DriverSignup";
 import OfferRide from "../Pages/OfferRide";
-import { useContext } from "react";
-import { AuthContext } from "../context/Auth";
 import Complaints from "../Pages/Complaints";
-import RidePage from "../Pages/RidePage";
+import RidePage from "../Pages/RideDetails";
 import Profile from "../Pages/Profile";
 import VerifyEmail from "../Pages/VerifyEmail";
+import { useAuth } from "../hooks/useAuth";
 
 export default function OtherRoutes() {
-    const { user } = useContext(AuthContext);
+    const { user } = useAuth();
 
     const isVerified = !user?.roles.includes("NOT_VERIFIED_USER");
     const isDriver = user?.roles.includes("DRIVER") && isVerified;

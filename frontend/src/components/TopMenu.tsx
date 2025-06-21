@@ -1,9 +1,8 @@
 import logo from "../assets/logo.png";
-import { useContext } from "react";
-import { AuthContext } from "../context/Auth";
+import { useAuth } from "../hooks/useAuth";
 
 export default function TopMenu() {
-    const { Logout, user } = useContext(AuthContext);
+    const { logout: Logout, user } = useAuth();
 
     const isVerified = !user?.roles.includes("NOT_VERIFIED_USER");
 

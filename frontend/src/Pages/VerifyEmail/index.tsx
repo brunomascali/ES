@@ -1,52 +1,45 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import TopMenu from "../../components/TopMenu";
-import { AuthContext } from "../../context/Auth";
-import axios from "axios";
 import email from "../../assets/email.png";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
-
-enum VerifyStatus {
-    IDLE = 0,
-    LOADING = 1,
-    SUCCESS = 2,
-    SEND_ERROR = 3,
-    VERIFY_ERROR = 4
-}
+import { Alert, AlertTitle } from "../../components/ui/alert";
+import { useAuth } from "../../hooks/useAuth";
+import { EmailVerificationStatus } from "../../types/enums/EmailVerificationStatus";
+import api from "../../services/api";
 
 export default function VerifyEmail() {
-    const { user, setUser } = useContext(AuthContext);
+    const { user, setUser } = useAuth();
     const [code, setCode] = useState('');
-    const [verifyStatus, setVerifyStatus] = useState(VerifyStatus.IDLE);
+    const [verifyStatus, setVerifyStatus] = useState(EmailVerificationStatus.Idle);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        setVerifyStatus(VerifyStatus.IDLE);
+        setVerifyStatus(EmailVerificationStatus.Idle);
         try {
-            const verifyRequestResponse = await axios.post('http://127.0.0.1:8080/api/verify/' + code);
+            const verifyRequestResponse = await api.post('/verify/' + code);
             if (verifyRequestResponse.status === 200 && user) {
-                const getUserResponse = await axios.get('http://127.0.0.1:8080/api/users/email/' + user.email);
+                const getUserResponse = await api.get('/users/email/' + user.email);
                 if (getUserResponse.status === 200) {
                     setUser(getUserResponse.data);
                     window.location.href = '/';
                 }
             }
         } catch (error) {
-            setVerifyStatus(VerifyStatus.VERIFY_ERROR);
+            setVerifyStatus(EmailVerificationStatus.VerifyError);
         }
     }
 
     const handleResendCode = async (e?: React.MouseEvent) => {
         if (e) e.preventDefault();
-        setVerifyStatus(VerifyStatus.LOADING);
+        setVerifyStatus(EmailVerificationStatus.Loading);
         try {
-            const response = await axios.post('http://127.0.0.1:8080/api/verify/resend/' + user?.email);
+            const response = await api.post('/verify/resend/' + user?.email);
             if (response.status === 200) {
-                setVerifyStatus(VerifyStatus.SUCCESS);
+                setVerifyStatus(EmailVerificationStatus.Success);
             }
         } catch (error) {
-            setVerifyStatus(VerifyStatus.SEND_ERROR);
+            setVerifyStatus(EmailVerificationStatus.SendError);
         }
     }
 
@@ -77,22 +70,23 @@ export default function VerifyEmail() {
                             Não recebeu o código? Reenviar código
                         </button>
                     </div>
-                    {verifyStatus === VerifyStatus.LOADING && (
+
+                    {verifyStatus === EmailVerificationStatus.Loading && (
                         <Alert className="mb-4 w-full border-indigo-500 bg-indigo-50 text-indigo-800">
                             <AlertTitle>Reenviando código...</AlertTitle>
                         </Alert>
                     )}
-                    {verifyStatus === VerifyStatus.SUCCESS && (
+                    {verifyStatus === EmailVerificationStatus.Success && (
                         <Alert className="mb-4 w-full border-green-500 bg-green-50 text-green-800">
                             <AlertTitle className="text-green-700">Código reenviado com sucesso!</AlertTitle>
                         </Alert>
                     )}
-                    {verifyStatus === VerifyStatus.SEND_ERROR && (
+                    {verifyStatus === EmailVerificationStatus.SendError && (
                         <Alert className="mb-4 w-full border-red-500 bg-red-50 text-red-800">
                             <AlertTitle>Erro ao reenviar código!</AlertTitle>
                         </Alert>
                     )}
-                    {verifyStatus === VerifyStatus.VERIFY_ERROR && (
+                    {verifyStatus === EmailVerificationStatus.VerifyError && (
                         <Alert className="mb-4 w-full border-red-500 bg-red-50 text-red-800">
                             <AlertTitle>Código inválido!</AlertTitle>
                         </Alert>
