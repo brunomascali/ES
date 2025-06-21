@@ -41,15 +41,22 @@ public class RatingController {
 
     // Média de avaliação de um usuário
     @GetMapping("/avg/{user_cpf}")
-    public Double getAverageRating(@PathVariable String user_cpf) {
+    public Double getAverageRating(@PathVariable String user_cpf, @RequestParam(required = false) Boolean driverRating) {
         List<Rating> ratings = getUserRatings(user_cpf);
-
+    
+        if (driverRating != null) {
+            ratings = ratings.stream()
+                    .filter(r -> r.isDriverRating() == driverRating)
+                    .toList();
+        }
+    
         OptionalDouble avgRating = ratings.stream().mapToDouble(Rating::getRating).average();
-
+    
         if (avgRating.isEmpty()) {
             return 5.0;
         }
-
+    
         return avgRating.getAsDouble();
     }
+    
 }
