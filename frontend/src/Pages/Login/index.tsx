@@ -1,12 +1,13 @@
-import { useContext, useState } from "react";
-import { AuthContext } from "../../context/Auth";
+import { useState } from "react";
 import logo from '../../assets/logo.png';
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
+import { useAuth } from "../../hooks/useAuth";
+import type { User } from "../../types/User";
 
 export default function Login() {
-    const context = useContext(AuthContext);
+    const context = useAuth();
     const [input, setInput] = useState({ email: 'bmvolkmer@inf.ufrgs.br', password: '123' });
     const [invalidLogin, setInvalidLogin] = useState(false);
     const [banned, setBanned] = useState(false);
@@ -15,8 +16,11 @@ export default function Login() {
         e.preventDefault();
         setInvalidLogin(false);
         setBanned(false);
+
         try {
-            await context.Login(input);
+            const user: User = await context.login(input);
+            context.setUser(user);
+            localStorage.setItem('user', JSON.stringify(user));
         } catch (error: any) {
             if (error.response.status === 403) {
                 setBanned(true);
@@ -61,8 +65,9 @@ export default function Login() {
                             required
                         />
                     </div>
-                    <Button type="submit" className="w-full">Entrar</Button>
+                    <Button type="submit" className="cursor-pointer w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2">Entrar</Button>
                 </form>
+
                 {invalidLogin && (
                     <Alert variant="destructive" className="mt-6 w-full">
                         <AlertTitle>Erro!</AlertTitle>

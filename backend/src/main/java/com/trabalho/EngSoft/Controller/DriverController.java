@@ -1,15 +1,30 @@
 package com.trabalho.EngSoft.Controller;
 
-import com.trabalho.EngSoft.DTO.DriverValidationDTO;
-import com.trabalho.EngSoft.Model.*;
-import com.trabalho.EngSoft.Model.Enums.RoleName;
-import com.trabalho.EngSoft.Repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.Objects;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.trabalho.EngSoft.DTO.DriverValidationDTO;
+import com.trabalho.EngSoft.Model.CNH;
+import com.trabalho.EngSoft.Model.CRLV;
+import com.trabalho.EngSoft.Model.DriverInfo;
+import com.trabalho.EngSoft.Model.Enums.RoleName;
+import com.trabalho.EngSoft.Model.Role;
+import com.trabalho.EngSoft.Model.User;
+import com.trabalho.EngSoft.Repository.CNHRepository;
+import com.trabalho.EngSoft.Repository.CRLVRepository;
+import com.trabalho.EngSoft.Repository.DriverInfoRepository;
+import com.trabalho.EngSoft.Repository.RoleRepository;
+import com.trabalho.EngSoft.Repository.UserRepository;
 
 @RestController
 @CrossOrigin("*")
@@ -51,7 +66,6 @@ public class DriverController {
                 userRepository.save(user);
 
                 DriverInfo driverInfo = new DriverInfo();
-                driverInfo.setId(user.getId());
                 driverInfo.setDriver(user);
                 driverInfo.setPlate(driverValidationDTO.getPlate());
                 driverInfo.setColor(driverValidationDTO.getColor());

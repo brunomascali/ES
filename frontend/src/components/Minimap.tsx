@@ -1,14 +1,12 @@
-export default function Minimap({ width, height, address }: { width: number, height: number, address: string }) {
+export default function Minimap({ address }: { address: string }) {
     const encodedAddress = encodeURIComponent(address);
-    const src = `https://maps.google.com/maps?width=${width}&height=${height}&hl=pt-BR&q=${encodedAddress}&t=&z=14&ie=UTF8&iwloc=B&output=embed`;
-
-    console.log(encodedAddress);
+    const src = `https://maps.google.com/maps?width=100%&height=100%&hl=pt-BR&q=${encodedAddress}&t=&z=14&ie=UTF8&iwloc=B&output=embed`;
 
     return (
-        <div style={{ width: "100%" }}>
+        <div style={{ width: "100%", height: "100%" }}>
             <iframe
-                width={width}
-                height={height}
+                width="100%"
+                height="100%"
                 src={src}
                 style={{ border: 0 }}
                 loading="lazy"

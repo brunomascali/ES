@@ -1,31 +1,21 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import TopMenu from "../../components/TopMenu";
-import { AuthContext } from "../../context/Auth";
-import axios from "axios";
-
-type OfferRideData = {
-    driverCPF: string,
-    startingAddress: string,
-    latitude: number,
-    longitude: number,
-    availableSeats: 1 | 2 | 3,
-    date: string,
-    arrivalTime: string, 
-    description: string,
-    price: number,
-}
+import { useAuth } from "../../hooks/useAuth";
+import type { OfferRideData } from "../../types/OfferRideData";
+import { getCoordinates } from "../../services/coordinatesService";
+import api from "../../services/api";
 
 export default function OfferRide() {
-    const { user } = useContext(AuthContext);
+    const { user } = useAuth();
     const [offerRideData, setOfferRideData] = useState<OfferRideData>({
         driverCPF: user?.cpf || "",
-        startingAddress: "Avenida Ipiranga 1500, Porto Alegre",
+        startingAddress: "Avenida do Forte 1500 Porto Alegre RS",
         latitude: 0,
         longitude: 0,
         availableSeats: 3,
         date: new Date().toISOString().split('T')[0],
         arrivalTime: "10:00",
-        description: "",
+        description: "A -> B -> C -> D",
         price: 5.0,
     });
 
@@ -35,27 +25,29 @@ export default function OfferRide() {
             return;
         }
         
-        const coordinatesResponse = await axios.get("https://geocode.maps.co/search?q=" + offerRideData.startingAddress + "&api_key=6841a9190344d597744546tmib2caac")
-        if (coordinatesResponse.status === 200) {
-            const updatedData = { 
-                ...offerRideData, 
-                startingAddress: coordinatesResponse.data[0].display_name, 
-                latitude: coordinatesResponse.data[0].lat, 
-                longitude: coordinatesResponse.data[0].lon,
-            };
-            setOfferRideData(updatedData);
-            console.log(updatedData);
-        }
-    }
+    };
 
     const handleOfferRideSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (offerRideData.startingAddress.length === 0) {
-            alert("Endereço não pode ser vazio");
+        if (offerRideData.date <= new Date().toISOString().split('T')[0]) {
+            alert("Data não pode ser anterior à data atual");
             return;
         }
 
-        const offerRideResponse = await axios.post("http://127.0.0.1:8080/api/rides/create", {
+        const coordinatesResponse = await getCoordinates(offerRideData.startingAddress);
+        if (coordinatesResponse) {
+            const updatedData = { 
+                ...offerRideData, 
+                latitude: coordinatesResponse.lat, 
+                longitude: coordinatesResponse.lon,
+            };
+            setOfferRideData(updatedData);
+        } else {
+            alert("Erro ao buscar coordenadas do endereço");
+            return;
+        }
+
+        const offerRideResponse = await api.post("/rides/create", {
             ...offerRideData,
             price: Number(offerRideData.price),
             date: offerRideData.date,
@@ -67,11 +59,11 @@ export default function OfferRide() {
         else if (offerRideResponse.status === 400) {
             alert(offerRideResponse.data);
         }
-    }
+    };
 
     return (
-        <div>
-            <TopMenu activePage="oferecerCarona" />
+        <div className="fixed inset-0 min-h-screen w-full bg-gray-50 flex flex-col">
+            <TopMenu />
             <div className="container mx-auto py-8 px-4">
                 <div className="flex justify-center">
                     <form className="w-full max-w-2xl space-y-6" onSubmit={handleOfferRideSubmit}>
@@ -134,42 +126,6 @@ export default function OfferRide() {
                                 value={offerRideData.startingAddress} 
                                 onChange={(e) => setOfferRideData({ ...offerRideData, startingAddress: e.target.value })} 
                             />
-                            <button 
-                                type="button" 
-                                onClick={handleAddressSubmit} 
-                                className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-lg"
-                            >
-                                Buscar
-                            </button>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label htmlFor="latitude" className="block text-lg font-medium text-gray-700 mb-2">
-                                    Latitude
-                                </label>
-                                <input
-                                    disabled
-                                    type="text" 
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-gray-50 text-gray-500" 
-                                    id="latitude" 
-                                    value={offerRideData.latitude} 
-                                    onChange={(e) => setOfferRideData({ ...offerRideData, latitude: parseFloat(e.target.value) })} 
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="longitude" className="block text-lg font-medium text-gray-700 mb-2">
-                                    Longitude
-                                </label>
-                                <input
-                                    disabled
-                                    type="text" 
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-gray-50 text-gray-500" 
-                                    id="longitude" 
-                                    value={offerRideData.longitude} 
-                                    onChange={(e) => setOfferRideData({ ...offerRideData, longitude: parseFloat(e.target.value) })} 
-                                />
-                            </div>
                         </div>
                         
                         <div>
@@ -212,7 +168,7 @@ export default function OfferRide() {
                         
                         <button 
                             type="submit" 
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-lg"
+                            className="cursor-pointer w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md text-lg"
                         >
                             Oferecer Carona
                         </button>

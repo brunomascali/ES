@@ -1,9 +1,12 @@
 import logo from "../assets/logo.png";
-import { useContext } from "react";
-import { AuthContext } from "../context/Auth";
+import { useAuth } from "../hooks/useAuth";
 
-export default function TopMenu({ activePage }: { activePage: string }) {
-    const { Logout, user } = useContext(AuthContext);
+export default function TopMenu() {
+    const { logout: Logout, user } = useAuth();
+
+    const isVerified = !user?.roles.includes("NOT_VERIFIED_USER");
+
+    const activePage: string = window.location.pathname.split('/')[1];
 
     return (
         <nav className="bg-indigo-50 py-2 px-5 w-full shadow-md">
@@ -14,13 +17,14 @@ export default function TopMenu({ activePage }: { activePage: string }) {
                     </a>
                     <a
                         href="/"
-                        className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === 'home'
+                        className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === ''
                             ? 'bg-indigo-600 text-white'
                             : 'text-gray-700 hover:bg-indigo-100 hover:text-indigo-700'
                             }`}
                     >
                         Início
                     </a>
+                    { isVerified && (
                     <a
                         href="/caronas"
                         className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === 'caronas'
@@ -28,8 +32,9 @@ export default function TopMenu({ activePage }: { activePage: string }) {
                             : 'text-gray-700 hover:bg-indigo-100 hover:text-indigo-700'
                             }`}
                     >
-                        Caronas
-                    </a>
+                            Caronas
+                        </a>
+                    )}
                     <a
                         href="#"
                         className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === 'perfil'
@@ -42,7 +47,7 @@ export default function TopMenu({ activePage }: { activePage: string }) {
                     {user?.roles.includes("DRIVER") && (
                         <a
                             href="/oferecer-carona"
-                            className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === 'motorista'
+                            className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === 'oferecer-carona'
                                 ? 'bg-indigo-600 text-white'
                                 : 'text-gray-700 hover:bg-indigo-100 hover:text-indigo-700'
                                 }`}
@@ -64,7 +69,7 @@ export default function TopMenu({ activePage }: { activePage: string }) {
                 </div>
                 <button
                     onClick={Logout}
-                    className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors text-lg"
+                    className="cursor-pointer bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors text-lg"
                 >
                     Sair
                 </button>

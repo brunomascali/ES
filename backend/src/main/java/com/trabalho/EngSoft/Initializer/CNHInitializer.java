@@ -20,8 +20,8 @@ public class CNHInitializer implements CommandLineRunner {
             cnhRepository.save(cnh1);
 
             CNH cnh2 = new CNH();
-            cnh2.setCnh("2");
-            cnh2.setCpf("2");
+            cnh2.setCnh("22222222222");
+            cnh2.setCpf("22222222222");
             cnhRepository.save(cnh2);
         }
     }

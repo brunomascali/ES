@@ -1,42 +1,29 @@
 import TopMenu from "../../components/TopMenu";
 import RideCard from "../../components/RideCard";
 import { useEffect, useState } from "react";
-import axios from "axios";
-
-export interface IRide { 
-    id: string,
-    driver: string,
-    startAddress: string,
-    latitude: number,
-    longitude: number,
-    availableSeats: number,
-    date: string,
-    arrivalTime: string, 
-    description: string,
-    price: number,
-}
+import { Users } from "lucide-react";
+import type { IRide } from "../../types/Ride";
+import api from "../../services/api";
 
 export default function Rides() {
     const [rides, setRides] = useState<IRide[]>([]);
+    const [isPassenger, setIsPassenger] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchRides = async() => {
             try {
-                const ridesResponse = await axios.get("http://127.0.0.1:8080/api/rides");
+                const ridesResponse = await api.get("/rides");
                 if (ridesResponse.status == 200) {
-                    console.log(ridesResponse.data);
-
-                    const rides = ridesResponse.data.map((ride: any) => ({
+                    const rides: IRide[] = ridesResponse.data.map((ride: any) => ({
                         ...ride,
-                        driver: ride['driver']['name'],
+                        driver: ride['driver'],
                         date: ride['date'],
                         arrivalTime: ride['arrivalTime']
-                    })) as IRide[];
+                    }));
                     setRides(rides);
                 }
             } catch (error) {
-                console.error("Error fetching rides:", error);
             } finally {
                 setLoading(false);
             }
@@ -46,8 +33,8 @@ export default function Rides() {
 
     if (loading) {
         return (
-            <div>
-                <TopMenu activePage="caronas" />
+            <div className="min-h-screen bg-gray-50">
+                <TopMenu />
                 <div className="container mx-auto py-8 px-4">
                     <div className="flex justify-center items-center min-h-64">
                         <div className="text-center">
@@ -61,23 +48,32 @@ export default function Rides() {
     }
 
     return (
-        <div>
-            <TopMenu activePage="caronas" />
+        <div className="fixed inset-0 min-h-screen w-full bg-gray-50 flex flex-col">
+            <TopMenu />
             <div className="container mx-auto py-8 px-4">
                 <div className="max-w-6xl mx-auto">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-                        Caronas Disponíveis
-                    </h1>
+                    <div className="flex flex-col items-center mb-8">
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                            Caronas Disponíveis
+                        </h1>
+                        <p className="text-lg text-gray-600">
+                            {rides.length} {rides.length === 1 ? 'carona encontrada' : 'caronas encontradas'}
+                        </p>
+                    </div>
                     
                     {rides.length === 0 ? (
-                        <div className="text-center py-12">
-                            <div className="text-gray-400 mb-4">
-                                <svg className="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
+                        <div className="bg-white rounded-lg shadow-md p-12">
+                            <div className="text-center">
+                                <div className="bg-gray-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                                    <Users className="w-8 h-8 text-gray-400" />
+                                </div>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                                    Nenhuma carona disponível
+                                </h3>
+                                <p className="text-gray-600 max-w-sm mx-auto">
+                                    Não há caronas disponíveis no momento. Tente novamente mais tarde.
+                                </p>
                             </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma carona disponível</h3>
-                            <p className="text-gray-500">Não há caronas disponíveis no momento. Tente novamente mais tarde.</p>
                         </div>
                     ) : (
                         <div className="space-y-6">
@@ -94,6 +90,7 @@ export default function Rides() {
                                     arrivalTime={ride.arrivalTime}
                                     description={ride.description}
                                     price={ride.price}
+                                    passengers={ride.passengers}
                                 />
                             ))}
                         </div>

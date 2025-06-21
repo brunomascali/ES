@@ -3,14 +3,17 @@ package com.trabalho.EngSoft.Controller;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import com.trabalho.EngSoft.Model.RideRequest;
+import com.trabalho.EngSoft.Repository.RideRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.trabalho.EngSoft.DTO.AcceptRideDTO;
+import com.trabalho.EngSoft.DTO.RideRequestDTO;
 import com.trabalho.EngSoft.DTO.CreateRideDTO;
 import com.trabalho.EngSoft.Model.Passenger;
 import com.trabalho.EngSoft.Model.Ride;
@@ -27,6 +30,9 @@ public class RideController {
 
     @Autowired
     private RideRepository rideRepository;
+
+    @Autowired
+    private RideRequestRepository rideRequestRepository;
 
     // Lista todas as caronas para teste
     @GetMapping("")
@@ -111,11 +117,11 @@ public class RideController {
         return ResponseEntity.ok().build();
     }
 
-    // Requisição de aceitar uma carona por usuário
-    @PutMapping("/acceptRide")
-    public ResponseEntity<?> acceptRide(@RequestBody AcceptRideDTO acceptRequest){
-        Optional<Ride> rideToAccept = rideRepository.findById(acceptRequest.getRideID());
-        Optional<User> userToAccept = userRepository.findByCpf(acceptRequest.getUserCPF());
+    // Cria uma Requisição de carona
+    @PostMapping("/requestRide")
+    public ResponseEntity<?> requestRide(@RequestBody RideRequestDTO rideRequestDTO){
+        Optional<Ride> rideToAccept = rideRepository.findById(rideRequestDTO.getRideId());
+        Optional<User> userToAccept = userRepository.findByCpf(rideRequestDTO.getUserCPF());
 
         if (rideToAccept.isEmpty())
             return ResponseEntity.badRequest().body("Carona inexistente");
@@ -123,9 +129,8 @@ public class RideController {
             return ResponseEntity.badRequest().body("Usuário inexistente");
 
         Ride ride = rideToAccept.get();
-        Passenger passenger = new Passenger(userToAccept.get(), acceptRequest.getUserAddress());
 
-        if(ride.isUserInRide(passenger.getPassenger()))
+        if(ride.isUserInRide(userToAccept.get()))
             return ResponseEntity.badRequest().body("Usuário já está presente na carona");
 
         // Checa se a carona já foi concluída ou se já está lotada
@@ -135,14 +140,109 @@ public class RideController {
         if (ride.full())
             return ResponseEntity.badRequest().body("Carona lotada");
 
-        Set<Passenger> ridePassengers = ride.getPassengers();
-        ridePassengers.add(passenger);
+        List<RideRequest> requests = rideRequestRepository.findByRideId(rideRequestDTO.getRideId());
+        if (requests.stream().anyMatch(request -> Objects.equals(request.getUserCPF(), rideRequestDTO.getUserCPF()))) {
+            return ResponseEntity.badRequest().body("Usuário já solicitou carona");
+        }
 
-        ride.setPassengers(ridePassengers);
-        ride.decreaseAvailableSeats();
-        rideRepository.save(ride);
+        RideRequest request = new RideRequest();
+        request.setRideId(rideRequestDTO.getRideId());
+        request.setUserAddress(rideRequestDTO.getUserAddress());
+        request.setUserCPF(rideRequestDTO.getUserCPF());
+
+        rideRequestRepository.save(request);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/acceptPassenger")
+    public ResponseEntity<?> acceptPassenger(@RequestBody RideRequestDTO rideRequestDTO) {
+        Optional<User> userToAccept = userRepository.findByCpf(rideRequestDTO.getUserCPF());
+        Optional<Ride> rideToAccept = rideRepository.findById(rideRequestDTO.getRideId());
+
+        if (rideToAccept.isEmpty())
+            return ResponseEntity.badRequest().body("Carona inexistente");
+        if (userToAccept.isEmpty())
+            return ResponseEntity.badRequest().body("Usuário inexistente");
+
+        Ride ride = rideToAccept.get();
+
+        // Checa se a carona já foi concluída ou se já está lotada
+        if (!ride.active())
+            return ResponseEntity.badRequest().body("Carona já foi concluída");
+
+        if (ride.full())
+            return ResponseEntity.badRequest().body("Carona lotada");
+
+        Passenger passenger = new Passenger();
+        passenger.setAddress(rideRequestDTO.getUserAddress());
+        passenger.setPassenger(userToAccept.get());
+
+        ride.getPassengers().add(passenger);
+        ride.setAvailableSeats(ride.getAvailableSeats() - 1);
+        rideRepository.save(ride);
+
+        List<RideRequest> rideRequests = rideRequestRepository.findByRideId(ride.getId());
+        for (RideRequest rideRequest1 : rideRequests) {
+            if (Objects.equals(rideRequest1.getUserCPF(), rideRequestDTO.getUserCPF())) {
+                rideRequestRepository.delete(rideRequest1);
+            }
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/rejectPassenger")
+    public ResponseEntity<?> rejectPassenger(@RequestBody RideRequestDTO rideRequestDTO) {
+        Optional<User> userToAccept = userRepository.findByCpf(rideRequestDTO.getUserCPF());
+        Optional<Ride> rideToAccept = rideRepository.findById(rideRequestDTO.getRideId());
+
+        if (rideToAccept.isEmpty())
+            return ResponseEntity.badRequest().body("Carona inexistente");
+        if (userToAccept.isEmpty())
+            return ResponseEntity.badRequest().body("Usuário inexistente");
+
+        Ride ride = rideToAccept.get();
+
+        // Checa se a carona já foi concluída ou se já está lotada
+        if (!ride.active())
+            return ResponseEntity.badRequest().body("Carona já foi concluída");
+
+        if (ride.full())
+            return ResponseEntity.badRequest().body("Carona lotada");
+
+        List<RideRequest> rideRequests = rideRequestRepository.findByRideId(ride.getId());
+        for (RideRequest rideRequest1 : rideRequests) {
+            if (Objects.equals(rideRequest1.getUserCPF(), rideRequestDTO.getUserCPF())) {
+                rideRequestRepository.delete(rideRequest1);
+            }
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/passengers/{ride_id}")
+    public ResponseEntity<?> getRidePassengers(@PathVariable long ride_id) {
+        Optional<Ride> ride_opt = rideRepository.findById(ride_id);
+
+        if (ride_opt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok().body(ride_opt.get().getPassengers());
+    }
+
+    @GetMapping("/requests/{ride_id}")
+    public ResponseEntity<?> getRequestsByRide(@PathVariable long ride_id) {
+        Optional<Ride> ride_opt = rideRepository.findById(ride_id);
+
+        if (ride_opt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<RideRequest> requests = rideRequestRepository.findByRideId(ride_id);
+
+        return ResponseEntity.ok().body(requests);
     }
 
     // Confirma que a carona foi concluída
