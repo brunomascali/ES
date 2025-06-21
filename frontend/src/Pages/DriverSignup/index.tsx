@@ -28,11 +28,11 @@ interface ValidateCnhRequest {
 export default function DriverSignup() {
     const { user, setUser } = useContext(AuthContext);
     const [cnhRequest, setCnhRequest] = useState<ValidateCnhRequest>({
-        cnh: "",
+        cnh: "11111111111",
         cpf: user!.cpf,
-        plate: "",
-        model: "",
-        color: ""
+        plate: "ABC1234",
+        model: "Ford Ka 2008",
+        color: "Preto"
     });
     const [errors, setErrors] = useState<string[]>([]);
     const [driverSignupStatus, setDriverSignupStatus] = useState(DriverSignupStatus.IDLE);

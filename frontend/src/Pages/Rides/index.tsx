@@ -38,7 +38,7 @@ export default function Rides() {
 
                     const rides = ridesResponse.data.map((ride: any) => ({
                         ...ride,
-                        driver: ride['driver']['name'],
+                        driver: ride['driver'],
                         date: ride['date'],
                         arrivalTime: ride['arrivalTime']
                     })) as IRide[];

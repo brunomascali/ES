@@ -197,6 +197,7 @@ export default function RidePage() {
     const [isPassenger, setIsPassenger] = useState(false);
     const [isDriver, setIsDriver] = useState(false);
     const [driverInfo, setDriverInfo] = useState<IDriverInfo | null>(null);
+    const [driverRating, setDriverRating] = useState<number>(5.0);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -204,7 +205,7 @@ export default function RidePage() {
             try {
                 const rideResponse = await axios.get(`http://127.0.0.1:8080/api/rides/${id}`);
                 const driverInfoResponse = await axios.get(`http://127.0.0.1:8080/api/driver/${rideResponse.data.driver.id}`);
-
+                
                 if (rideResponse.status === 200 && driverInfoResponse.status === 200) {
                     setRide(rideResponse.data as IRide);
                     setDriverInfo(driverInfoResponse.data as IDriverInfo);
@@ -229,6 +230,17 @@ export default function RidePage() {
             }
         };
         fetchRideRequests();
+
+        const fetchDriverRating = async () => {
+            try {
+                const ratingRequest = await axios.get(`http://127.0.0.1:8080/api/rating/avg/${ride.driver.cpf}`);
+                setDriverRating(ratingRequest.data as number);
+                console.log(ratingRequest.data);
+            } catch(error) {
+                console.error(error);
+            }
+        };
+        fetchDriverRating();
     }, [id]);
 
     if (loading) {
@@ -258,6 +270,9 @@ export default function RidePage() {
                         </h1>
                         <p className="text-lg text-gray-600">
                             Oferecida por <span className="font-semibold text-indigo-600">{ride?.driver.name === user?.name ? "Você" : ride?.driver.name}</span>
+                        </p>
+                        <p className="text-lg text-gray-600">
+                            Avaliação do Motorista: <span className="font-semibold text-indigo-600">{driverRating}</span>
                         </p>
                     </div>
 

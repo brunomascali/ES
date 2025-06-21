@@ -4,15 +4,28 @@ import Minimap from "./Minimap";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/Auth";
 import { Block } from "../Pages/RidePage";
+import axios from "axios";
 
 export default function RideCard(ride: IRide) {
     const { user } = useContext(AuthContext);
     const [isPassenger, setIsPassenger] = useState(false);
+    const [driverRating, setDriverRating] = useState<number>(5.0);
+
+    console.log(ride);
 
     useEffect(() => {
-        setIsPassenger(ride.passengers.some((passenger: IPassenger) => passenger.passenger.cpf === user?.cpf));
+        const fetchDriverRating = async () => {
+            try {
+                const ratingRequest = await axios.get(`http://127.0.0.1:8080/api/rating/avg/${ride.driver.cpf}`);
+                setDriverRating(ratingRequest.data as number);
+                console.log(ratingRequest.data);
+            } catch(error) {
+                console.error(error);
+            }
+        };
+        fetchDriverRating();
     }, []);
-
+    
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('pt-BR');
@@ -25,7 +38,10 @@ export default function RideCard(ride: IRide) {
                     <div className="flex-1 space-y-6">
                         <div className="flex items-center justify-start gap-2">
                             <span className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
-                                Motorista: {ride.driver}
+                                Motorista: {ride.driver.name}
+                            </span>
+                            <span className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
+                                Avaliação do Motorista: {driverRating}
                             </span>
                             <span className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
                                 {ride.availableSeats} {ride.availableSeats === 1 ? 'vaga' : 'vagas'}
