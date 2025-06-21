@@ -39,24 +39,32 @@ public class RatingController {
         return ratingRepository.findByUserTo(user_opt.get().getId());
     }
 
-    // Média de avaliação de um usuário
-    @GetMapping("/avg/{user_cpf}")
-    public Double getAverageRating(@PathVariable String user_cpf, @RequestParam(required = false) Boolean driverRating) {
+    // Média de avaliação de um passageiro
+    @GetMapping("/avg/passenger/{user_cpf}")
+    public Double getPassengerAverageRating(@PathVariable String user_cpf) {
         List<Rating> ratings = getUserRatings(user_cpf);
-    
-        if (driverRating != null) {
-            ratings = ratings.stream()
-                    .filter(r -> r.isDriverRating() == driverRating)
-                    .toList();
-        }
-    
-        OptionalDouble avgRating = ratings.stream().mapToDouble(Rating::getRating).average();
-    
+
+        OptionalDouble avgRating = ratings.stream().filter(r -> !r.isDriverRating()).mapToDouble(Rating::getRating).average();
+
         if (avgRating.isEmpty()) {
             return 5.0;
         }
-    
+
         return avgRating.getAsDouble();
     }
-    
+
+
+    // Média de avaliação de um motorista
+    @GetMapping("/avg/driver/{user_cpf}")
+    public Double getDriverAverageRating(@PathVariable String user_cpf) {
+        List<Rating> ratings = getUserRatings(user_cpf);
+
+        OptionalDouble avgRating = ratings.stream().filter(Rating::isDriverRating).mapToDouble(Rating::getRating).average();
+
+        if (avgRating.isEmpty()) {
+            return 5.0;
+        }
+
+        return avgRating.getAsDouble();
+    }
 }

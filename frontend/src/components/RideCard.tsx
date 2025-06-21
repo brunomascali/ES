@@ -16,7 +16,7 @@ export default function RideCard(ride: IRide) {
     useEffect(() => {
         const fetchDriverRating = async () => {
             try {
-                const ratingRequest = await axios.get(`http://127.0.0.1:8080/api/rating/avg/${ride.driver.cpf}`);
+                const ratingRequest = await axios.get(`http://127.0.0.1:8080/api/rating/avg/driver/${ride.driver.cpf}`);
                 setDriverRating(ratingRequest.data as number);
                 console.log(ratingRequest.data);
             } catch(error) {
