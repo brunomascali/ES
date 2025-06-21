@@ -9,7 +9,7 @@ public class CreateRideDTO {
     private double latitude;
     private double longitude;
     private int availableSeats;
-    private String date;
+    private int days;
     private String arrivalTime;
     private String description;
     private float price;

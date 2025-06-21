@@ -1,12 +1,12 @@
 import React, { createContext, useState, useEffect } from 'react';
-import type { User } from '../types/User';
+import type { IUser } from '../types/User';
 import type { AuthContextType } from '../types/AuthContextType';
 import { login  } from '../services/authService'
 
 export const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<IUser | null>(null);
 
   useEffect(() => {
     const storageUser = localStorage.getItem('user');

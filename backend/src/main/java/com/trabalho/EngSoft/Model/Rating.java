@@ -18,10 +18,10 @@ public class Rating {
     private long id;
 
     @Column(nullable = false)
-    private long userFrom;
+    private String userFrom;
 
     @Column(nullable = false)
-    private long userTo;
+    private String userTo;
 
     @Column(nullable = false)
     private int rating;

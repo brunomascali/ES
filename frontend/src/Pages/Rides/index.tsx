@@ -18,7 +18,7 @@ export default function Rides() {
                     const rides: IRide[] = ridesResponse.data.map((ride: any) => ({
                         ...ride,
                         driver: ride['driver'],
-                        date: ride['date'],
+                        days: ride['days'],
                         arrivalTime: ride['arrivalTime']
                     }));
                     setRides(rides);
@@ -48,10 +48,10 @@ export default function Rides() {
     }
 
     return (
-        <div className="fixed inset-0 min-h-screen w-full bg-gray-50 flex flex-col">
+        <div>
             <TopMenu />
-            <div className="container mx-auto py-8 px-4">
-                <div className="max-w-6xl mx-auto">
+            <div className="w-full py-8 px-4">
+                <div className="max-w-screen-2xl mx-auto">
                     <div className="flex flex-col items-center mb-8">
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
                             Caronas Disponíveis
@@ -77,16 +77,16 @@ export default function Rides() {
                         </div>
                     ) : (
                         <div className="space-y-6">
-                            {rides.map((ride, index) => (
+                            {rides.map((ride) => (
                                 <RideCard 
-                                    key={ride.driver + ride.date + ride.arrivalTime + index}
+                                    key={ride.id}
                                     id={ride.id}
                                     driver={ride.driver}
                                     startAddress={ride.startAddress}
                                     latitude={ride.latitude}
                                     longitude={ride.longitude}
                                     availableSeats={ride.availableSeats}
-                                    date={ride.date}
+                                    days={ride.days}
                                     arrivalTime={ride.arrivalTime}
                                     description={ride.description}
                                     price={ride.price}

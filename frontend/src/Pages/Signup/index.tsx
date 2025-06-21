@@ -57,7 +57,7 @@ export default function Signup() {
     }
 
     return (
-        <div className="fixed inset-0 min-h-screen w-full bg-gray-50 flex items-center justify-center px-4">
+        <div className="min-h-screen w-full bg-gray-50 flex items-center justify-center px-4">
             <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 flex flex-col items-center">
                 <img src={logo} alt="Logo" className="mb-6 w-48" />
                 <h2 className="text-2xl font-bold mb-6 text-center">Cadastro</h2>

@@ -44,7 +44,7 @@ export default function VerifyEmail() {
     }
 
     return (
-        <div className="fixed inset-0 min-h-screen w-full bg-gray-50 flex flex-col">
+        <div className="min-h-screen w-full bg-gray-50 flex flex-col">
             <TopMenu />
             <div className="flex flex-1 items-center justify-center px-4">
                 <form onSubmit={handleSubmit} className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 flex flex-col items-center">

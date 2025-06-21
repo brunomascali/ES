@@ -1,7 +1,7 @@
 import api from "./api";
 import type { AlterRoleRequest, ValidateCnhRequest } from "../types/requests";
 import { DriverSignupStatus } from "../types/enums/DriverSignupStatus";
-import type { User } from "../types/User";
+import type { IUser } from "../types/User";
 
 const validateCnhForm = (cnhRequest: ValidateCnhRequest): string[] => {
     let errors = [];
@@ -17,7 +17,7 @@ const validateCnhForm = (cnhRequest: ValidateCnhRequest): string[] => {
     return errors;
 }
 
-export const handleCnhVerification = async (e: React.FormEvent<HTMLFormElement>, cnhRequest: ValidateCnhRequest, setErrors: (errors: string[]) => void, setDriverSignupStatus: (status: DriverSignupStatus) => void, setUser: (user: User) => void, user: User) => {
+export const handleCnhVerification = async (e: React.FormEvent<HTMLFormElement>, cnhRequest: ValidateCnhRequest, setErrors: (errors: string[]) => void, setDriverSignupStatus: (status: DriverSignupStatus) => void, setUser: (user: IUser) => void, user: IUser) => {
     e.preventDefault();
     let errors = validateCnhForm(cnhRequest);
     if (errors.length > 0) {

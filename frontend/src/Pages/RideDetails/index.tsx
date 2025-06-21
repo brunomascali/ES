@@ -12,6 +12,8 @@ import type { IPassenger } from "../../types/Passenger";
 import Passengers from "./Passengers";
 import RequestRideForm from "./RideRequestForm";
 import api from "../../services/api";
+import DayPicker from "../../components/DayPicker";
+import StarRating from "../../components/StarRating";
 
 export const Block = ({ title, children, icon }: { title: string, children: React.ReactNode, icon?: React.ReactNode }) => {
     return (
@@ -43,7 +45,7 @@ export default function RidePage() {
             try {
                 const rideResponse = await api.get(`/rides/${id}`);
                 const driverInfoResponse = await api.get(`/driver/${rideResponse.data.driver.id}`);
-                
+
                 if (rideResponse.status === 200 && driverInfoResponse.status === 200) {
                     setRide(rideResponse.data as IRide);
                     setDriverInfo(driverInfoResponse.data as IDriverInfo);
@@ -64,22 +66,22 @@ export default function RidePage() {
             const response = await api.get(`/rides/requests/${id}`);
             if (response.status === 200) {
                 setRideRequest(response.data as IRideRequest[]);
-                console.log(response.data);
             }
         };
         fetchRideRequests();
+    }, []);
 
+    useEffect(() => {
         const fetchDriverRating = async () => {
             try {
-                const ratingRequest = await api.get(`/rating/avg/${ride?.driver.cpf}`);
+                const ratingRequest = await api.get(`/rating/avg/driver/${ride?.driver.cpf}`);
                 setDriverRating(ratingRequest.data as number);
-                console.log(ratingRequest.data);
-            } catch(error) {
+            } catch (error) {
                 console.error(error);
             }
         };
         fetchDriverRating();
-    }, []);
+    }, [ride]);
 
     if (loading) {
         return (
@@ -98,7 +100,7 @@ export default function RidePage() {
     }
 
     return (
-        <div className="fixed inset-0 min-h-screen w-full bg-gray-50 flex flex-col">
+        <div>
             <TopMenu />
             <div className="container mx-auto py-8 px-4">
                 <div className="max-w-6xl mx-auto">
@@ -112,25 +114,26 @@ export default function RidePage() {
                         <p className="text-lg text-gray-600">
                             Avaliação do Motorista: <span className="font-semibold text-indigo-600">{driverRating}</span>
                         </p>
+                        {isPassenger && (
+                            <StarRating cpf_from={user!.cpf} cpf_to={ride?.driver.cpf!} is_driver_rating={true} />
+                        )}
                     </div>
 
                     <div className="bg-white rounded-lg shadow-md p-8">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <Block title="Data" icon={<Calendar className="w-6 h-6 text-indigo-600 mt-1" />}>
-                                        <p className="text-lg font-semibold text-gray-900">
-                                            {ride?.date ? new Date(ride.date).toLocaleDateString('pt-BR') : ""}
-                                        </p>
+                                    <Block title="Dias" >
+                                        <DayPicker offerRideData={ride!} />
                                     </Block>
 
-                                    <Block title="Horário de Chegada" icon={<Clock className="w-6 h-6 text-indigo-600 mt-1" />}>
+                                    <Block title="Horário de Chegada no Vale" icon={<Clock className="w-6 h-6 text-indigo-600 mt-1" />}>
                                         <p className="text-lg font-semibold text-gray-900">
                                             {ride?.arrivalTime}
                                         </p>
                                     </Block>
 
-                                    <Block title="Preço" icon={<DollarSign className="w-6 h-6 text-green-600 mt-1" />}>
+                                    <Block title={`Valor ${isPassenger ? 'Pago' : ''}`} icon={<DollarSign className="w-6 h-6 text-green-600 mt-1" />}>
                                         <p className="text-lg font-semibold text-green-600">
                                             R$ {ride?.price.toFixed(2)}
                                         </p>
@@ -143,14 +146,19 @@ export default function RidePage() {
                                     </Block>
                                 </div>
 
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <Block title="Veículo" icon={<Car className="w-6 h-6 text-indigo-600 mt-1" />}>
+                                        <p className="text-lg font-semibold text-gray-900">{driverInfo?.model} {driverInfo?.color}</p>
+                                    </Block>
+                                    <Block title="Placa" icon={<Car className="w-6 h-6 text-indigo-600 mt-1" />}>
+                                        <p className="text-lg font-semibold text-gray-900">{driverInfo?.plate}</p>
+                                    </Block>
+                                </div>
+
                                 <Block title="Local de Partida" icon={<MapPin className="w-6 h-6 text-indigo-600 mt-1" />}>
                                     <p className="text-lg font-semibold text-gray-900">
                                         {ride?.startAddress}
                                     </p>
-                                </Block>
-
-                                <Block title="Veículo" icon={<Car className="w-6 h-6 text-indigo-600 mt-1" />}>
-                                    <p className="text-lg font-semibold text-gray-900">{driverInfo?.model} {driverInfo?.color} - {driverInfo?.plate}</p>
                                 </Block>
 
                                 {ride?.description && (
@@ -166,7 +174,7 @@ export default function RidePage() {
                                     </>
                                 )}
 
-                                { !isPassenger && !isDriver && ride?.availableSeats! > 0 && (
+                                {!isPassenger && !isDriver && ride?.availableSeats! > 0 && (
                                     <RequestRideForm ride={ride!} />
                                 )}
 

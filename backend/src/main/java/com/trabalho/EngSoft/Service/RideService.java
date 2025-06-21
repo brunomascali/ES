@@ -27,7 +27,7 @@ public class RideService {
         for (Ride ride : relevantRides) {
             RideHistoryItemDTO dto = new RideHistoryItemDTO();
             dto.setId(ride.getId());
-            dto.setDate(ride.getDate());
+            dto.setDays(ride.getDays());
             dto.setTime(ride.getArrivalTime());
             dto.setStartAddress(ride.getStartAddress());
             dto.setPrice(ride.getPrice());
@@ -55,13 +55,13 @@ public class RideService {
         }
 
         // Ordenar o histórico por data/hora 
-        history.sort((r1, r2) -> {
-            int dateComparison = r2.getDate().compareTo(r1.getDate());
-            if (dateComparison != 0) {
-                return dateComparison;
-            }
-            return r2.getTime().compareTo(r1.getTime());
-        });
+//        history.sort((r1, r2) -> {
+//            int dateComparison = r2.getDate().compareTo(r1.getDate());
+//            if (dateComparison != 0) {
+//                return dateComparison;
+//            }
+//            return r2.getTime().compareTo(r1.getTime());
+//        });
 
         return history;
     }

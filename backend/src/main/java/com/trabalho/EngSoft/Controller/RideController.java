@@ -88,12 +88,11 @@ public class RideController {
         newRide.setStartAddress(createRequest.getStartingAddress());
         newRide.setLatitude(createRequest.getLatitude());
         newRide.setLongitude(createRequest.getLongitude());
+        newRide.setDays(createRequest.getDays());
         
         try {
-            LocalDate rideDate = LocalDate.parse(createRequest.getDate());
             LocalTime rideTime = LocalTime.parse(createRequest.getArrivalTime());
             
-            newRide.setDate(rideDate);
             newRide.setArrivalTime(rideTime);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Formato de data ou hora inválido");
@@ -134,8 +133,8 @@ public class RideController {
             return ResponseEntity.badRequest().body("Usuário já está presente na carona");
 
         // Checa se a carona já foi concluída ou se já está lotada
-        if (!ride.active())
-            return ResponseEntity.badRequest().body("Carona já foi concluída");
+//        if (!ride.active())
+//            return ResponseEntity.badRequest().body("Carona já foi concluída");
 
         if (ride.full())
             return ResponseEntity.badRequest().body("Carona lotada");
@@ -168,8 +167,8 @@ public class RideController {
         Ride ride = rideToAccept.get();
 
         // Checa se a carona já foi concluída ou se já está lotada
-        if (!ride.active())
-            return ResponseEntity.badRequest().body("Carona já foi concluída");
+//        if (!ride.active())
+//            return ResponseEntity.badRequest().body("Carona já foi concluída");
 
         if (ride.full())
             return ResponseEntity.badRequest().body("Carona lotada");
@@ -205,8 +204,8 @@ public class RideController {
         Ride ride = rideToAccept.get();
 
         // Checa se a carona já foi concluída ou se já está lotada
-        if (!ride.active())
-            return ResponseEntity.badRequest().body("Carona já foi concluída");
+//        if (!ride.active())
+//            return ResponseEntity.badRequest().body("Carona já foi concluída");
 
         if (ride.full())
             return ResponseEntity.badRequest().body("Carona lotada");

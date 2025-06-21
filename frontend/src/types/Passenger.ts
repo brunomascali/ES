@@ -1,6 +1,6 @@
-import type { User } from "./User";
+import type { IUser } from "./User";
 
 export interface IPassenger {
     address: string;
-    passenger: User;
+    passenger: IUser;
 };

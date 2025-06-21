@@ -10,7 +10,7 @@ export default function TopMenu() {
 
     return (
         <nav className="bg-indigo-50 py-2 px-5 w-full shadow-md">
-            <div className="flex justify-between items-center">
+            <div className="container mx-auto flex justify-between items-center">
                 <div className="flex items-center space-x-6">
                     <a href="/" className="flex items-center">
                         <img src={logo} alt="Logo" className="h-15" />
@@ -24,14 +24,14 @@ export default function TopMenu() {
                     >
                         Início
                     </a>
-                    { isVerified && (
-                    <a
-                        href="/caronas"
-                        className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === 'caronas'
-                            ? 'bg-indigo-600 text-white'
-                            : 'text-gray-700 hover:bg-indigo-100 hover:text-indigo-700'
-                            }`}
-                    >
+                    {isVerified && (
+                        <a
+                            href="/caronas"
+                            className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === 'caronas'
+                                ? 'bg-indigo-600 text-white'
+                                : 'text-gray-700 hover:bg-indigo-100 hover:text-indigo-700'
+                                }`}
+                        >
                             Caronas
                         </a>
                     )}

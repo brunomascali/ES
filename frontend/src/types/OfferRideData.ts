@@ -4,7 +4,7 @@ export interface OfferRideData {
     latitude: number,
     longitude: number,
     availableSeats: 1 | 2 | 3,
-    date: string,
+    days: number,
     arrivalTime: string, 
     description: string,
     price: number,

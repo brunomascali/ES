@@ -4,7 +4,7 @@ import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
 import { useAuth } from "../../hooks/useAuth";
-import type { User } from "../../types/User";
+import type { IUser } from "../../types/User";
 
 export default function Login() {
     const context = useAuth();
@@ -18,7 +18,7 @@ export default function Login() {
         setBanned(false);
 
         try {
-            const user: User = await context.login(input);
+            const user: IUser = await context.login(input);
             context.setUser(user);
             localStorage.setItem('user', JSON.stringify(user));
         } catch (error: any) {
@@ -35,7 +35,7 @@ export default function Login() {
     }
 
     return (
-        <div className="fixed inset-0 min-h-screen w-full bg-gray-50 flex items-center justify-center px-4">
+        <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 px-4">
             <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 flex flex-col items-center">
                 <img src={logo} alt="Logo" className="mb-6 w-48" />
                 <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>

@@ -4,6 +4,7 @@ import { useAuth } from "../../hooks/useAuth";
 import type { OfferRideData } from "../../types/OfferRideData";
 import { getCoordinates } from "../../services/coordinatesService";
 import api from "../../services/api";
+import DayPicker from "../../components/DayPicker";
 
 export default function OfferRide() {
     const { user } = useAuth();
@@ -13,7 +14,7 @@ export default function OfferRide() {
         latitude: 0,
         longitude: 0,
         availableSeats: 3,
-        date: new Date().toISOString().split('T')[0],
+        days: 0,
         arrivalTime: "10:00",
         description: "A -> B -> C -> D",
         price: 5.0,
@@ -29,8 +30,8 @@ export default function OfferRide() {
 
     const handleOfferRideSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (offerRideData.date <= new Date().toISOString().split('T')[0]) {
-            alert("Data não pode ser anterior à data atual");
+        if (offerRideData.days == 0) {
+            alert("Pelo menos um dia deve ser selecionado");
             return;
         }
 
@@ -50,7 +51,7 @@ export default function OfferRide() {
         const offerRideResponse = await api.post("/rides/create", {
             ...offerRideData,
             price: Number(offerRideData.price),
-            date: offerRideData.date,
+            days: offerRideData.days,
             arrivalTime: offerRideData.arrivalTime,
         });
         if (offerRideResponse.status === 200) {
@@ -62,7 +63,7 @@ export default function OfferRide() {
     };
 
     return (
-        <div className="fixed inset-0 min-h-screen w-full bg-gray-50 flex flex-col">
+        <div>
             <TopMenu />
             <div className="container mx-auto py-8 px-4">
                 <div className="flex justify-center">
@@ -88,16 +89,17 @@ export default function OfferRide() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="date" className="block text-lg font-medium text-gray-700 mb-2">
-                                    Data
+                                    Dias
                                 </label>
-                                <input
+                                <DayPicker offerRideData={offerRideData} setOfferRideData={setOfferRideData} />
+                                {/* <input
                                     required
                                     type="date"
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                     id="date"
                                     value={offerRideData.date}
                                     onChange={(e) => setOfferRideData({ ...offerRideData, date: e.target.value })}
-                                />
+                                /> */}
                             </div>
                             <div>
                                 <label htmlFor="time" className="block text-lg font-medium text-gray-700 mb-2">

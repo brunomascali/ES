@@ -38,7 +38,7 @@ public class RatingController {
             return new ArrayList<>();
         }
 
-        return ratingRepository.findByUserTo(user_opt.get().getId());
+        return ratingRepository.findByUserTo(user_opt.get().getCpf());
     }
 
     // Média de avaliação de um passageiro
@@ -59,7 +59,7 @@ public class RatingController {
     // Média de avaliação de um motorista
     @GetMapping("/avg/driver/{user_cpf}")
     public Double getDriverAverageRating(@PathVariable String user_cpf) {
-        List<Rating> ratings = getUserRatings(user_cpf);
+        List<Rating> ratings = ratingRepository.findByUserTo(user_cpf);
 
         OptionalDouble avgRating = ratings.stream().filter(Rating::isDriverRating).mapToDouble(Rating::getRating).average();
 

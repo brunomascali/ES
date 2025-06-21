@@ -49,7 +49,7 @@ public class Ride {
     private Set<Passenger> passengers = new HashSet<>();
 
     @Column(nullable = false)
-    private LocalDate date;
+    private int days;
 
     @Column(nullable = false)
     private LocalTime arrivalTime;
@@ -67,18 +67,6 @@ public class Ride {
     private float price;
 
     private String description;
-
-    // Métodos auxiliares
-    public boolean active(){
-        LocalDate today = LocalDate.now();
-        LocalTime now = LocalTime.now();
-        
-        if (date.equals(today)) {
-            return !(rideComplete) && (arrivalTime.compareTo(now) > 0);
-        } else {
-            return !(rideComplete) && (date.isAfter(today));
-        }
-    }
 
     public boolean full(){
         return availableSeats == 0;

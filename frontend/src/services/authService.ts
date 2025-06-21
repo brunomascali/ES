@@ -1,7 +1,7 @@
 import api from './api';
-import type { User } from '../types/User';
+import type { IUser } from '../types/User';
 
-export async function login({ email, password }: { email: string, password: string }): Promise<User> {
+export async function login({ email, password }: { email: string, password: string }): Promise<IUser> {
   const response = await api.post('/login', { email, password });
 
   if (response.status === 403) {

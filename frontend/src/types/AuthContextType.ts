@@ -1,9 +1,9 @@
-import type { User } from "./User";
+import type { IUser } from "./User";
 
 export interface AuthContextType {
     signed: boolean;
-    user: User | null;
-    setUser: (user: User | null) => void;
-    login: (userData: { email: string, password: string }) => Promise<User>;
+    user: IUser | null;
+    setUser: (user: IUser | null) => void;
+    login: (userData: { email: string, password: string }) => Promise<IUser>;
     logout: () => void;
 }

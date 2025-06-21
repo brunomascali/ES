@@ -1,10 +1,12 @@
 import { Calendar, Clock, DollarSign, Users, MapPin } from "lucide-react";
-import type { IPassenger, IRide } from "../Pages/Rides";
 import Minimap from "./Minimap";
 import { useEffect, useState } from "react";
 import { Block } from "../Pages/RideDetails";
-import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
+import DayPicker from "./DayPicker";
+import type { IRide } from "src/types/Ride";
+import { isDriver } from "../utils/Roles";
+import { getAverageDriverRating } from "../services/ratingService";
 
 export default function RideCard(ride: IRide) {
     const { user } = useAuth();
@@ -15,21 +17,11 @@ export default function RideCard(ride: IRide) {
 
     useEffect(() => {
         const fetchDriverRating = async () => {
-            try {
-                const ratingRequest = await axios.get(`http://127.0.0.1:8080/api/rating/avg/driver/${ride.driver.cpf}`);
-                setDriverRating(ratingRequest.data as number);
-                console.log(ratingRequest.data);
-            } catch(error) {
-                console.error(error);
-            }
+            const rating = await getAverageDriverRating(ride.driver.cpf);
+            setDriverRating(rating);
         };
         fetchDriverRating();
     }, []);
-    
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('pt-BR');
-    };
 
     return (
         <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
@@ -51,11 +43,16 @@ export default function RideCard(ride: IRide) {
                                     Você é Passageiro
                                 </span>
                             )}
+                            {isDriver(user) && (
+                                <span className="bg-green-200 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                                    Você é Motorista
+                                </span>
+                            )}
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Block title="Data" icon={<Calendar className="w-6 h-6 text-indigo-600 mt-1" />}>
-                                    <p className="text-base font-semibold text-gray-900">{formatDate(ride.date)}</p>
+                            <Block title="Dias" icon={<Calendar className="w-6 h-6 text-indigo-600 mt-1" />}>
+                                <DayPicker offerRideData={ride} />
                             </Block>
 
                             <Block title="Horário de Chegada" icon={<Clock className="w-6 h-6 text-indigo-600 mt-1" />}>

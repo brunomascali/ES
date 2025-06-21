@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class RideHistoryItemDTO {
     private Long id;
-    private LocalDate date;
+    private int days;
     private LocalTime time;
     private String startAddress;
     private float price;
