@@ -12,8 +12,6 @@ export async function getAveragePassengerRating(cpf: string) {
 }
 
 export async function createRating(rating: IRatingData) {
-    console.log(rating);
     const response = await api.post(`/rating/create`, rating);
-    console.log("response: ", response);
     return response.data;
 }

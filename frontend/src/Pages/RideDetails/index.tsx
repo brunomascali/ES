@@ -78,7 +78,6 @@ export default function RidePage() {
         const response = await api.put(`/rides/confirmPayment/${id}/${user?.cpf}`);
         if (response.status === 200) {
             alert("Pagamento confirmado com sucesso!");
-            setPaid(true);
         }
     };
 
@@ -178,7 +177,7 @@ export default function RidePage() {
                                 )}
 
                                 {
-                                    isPassenger && !paid && (
+                                    isPassenger && (
                                         <Block title="Chave pix" icon={<CreditCard className="w-6 h-6 text-indigo-600 mt-1" />}>
                                             <p className="text-lg font-semibold text-gray-900">
                                                 Chave pix: {ride?.driver.email} 
