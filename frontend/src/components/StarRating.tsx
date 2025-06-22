@@ -26,7 +26,7 @@ export default function StarRating({ cpf_from, cpf_to, is_driver_rating }: { cpf
                 <Star className={`cursor-pointer ${rating.rating >= 4 ? 'text-yellow-500' : 'text-gray-300'}`} onClick={() => setRating({ ...rating, rating: 4 })} />
                 <Star className={`cursor-pointer ${rating.rating >= 5 ? 'text-yellow-500' : 'text-gray-300'}`} onClick={() => setRating({ ...rating, rating: 5 })} />
             </div>
-            <Input type="text" value={rating.description} onChange={(e) => setRating({ ...rating, description: e.target.value })} className="w-full" />
+            <Input type="text" placeholder="Avalie o passageiro" value={rating.description} onChange={(e) => setRating({ ...rating, description: e.target.value })} className="w-full" />
             <Button
                 type="button"
                 className="bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-2 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"

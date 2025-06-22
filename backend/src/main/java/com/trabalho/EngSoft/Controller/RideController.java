@@ -2,12 +2,12 @@ package com.trabalho.EngSoft.Controller;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import com.trabalho.EngSoft.Model.RideRequest;
+import com.trabalho.EngSoft.DTO.PassengerDTO;
+import com.trabalho.EngSoft.Model.*;
+import com.trabalho.EngSoft.Repository.RatingRepository;
 import com.trabalho.EngSoft.Repository.RideRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.trabalho.EngSoft.DTO.RideRequestDTO;
 import com.trabalho.EngSoft.DTO.CreateRideDTO;
-import com.trabalho.EngSoft.Model.Passenger;
-import com.trabalho.EngSoft.Model.Ride;
-import com.trabalho.EngSoft.Model.User;
 import com.trabalho.EngSoft.Repository.RideRepository;
 import com.trabalho.EngSoft.Repository.UserRepository;
 
@@ -33,6 +30,9 @@ public class RideController {
 
     @Autowired
     private RideRequestRepository rideRequestRepository;
+
+    @Autowired
+    private RatingRepository rideRatingRepository;
 
     // Lista todas as caronas para teste
     @GetMapping("")
@@ -147,7 +147,10 @@ public class RideController {
         RideRequest request = new RideRequest();
         request.setRideId(rideRequestDTO.getRideId());
         request.setUserAddress(rideRequestDTO.getUserAddress());
+        request.setUserName(userToAccept.get().getName());
         request.setUserCPF(rideRequestDTO.getUserCPF());
+        request.setAccepted(false);
+        request.setPaid(false);
 
         rideRequestRepository.save(request);
 
@@ -184,7 +187,9 @@ public class RideController {
         List<RideRequest> rideRequests = rideRequestRepository.findByRideId(ride.getId());
         for (RideRequest rideRequest1 : rideRequests) {
             if (Objects.equals(rideRequest1.getUserCPF(), rideRequestDTO.getUserCPF())) {
-                rideRequestRepository.delete(rideRequest1);
+                rideRequest1.setAccepted(true);
+                rideRequestRepository.save(rideRequest1);
+                break;
             }
         }
 
@@ -214,6 +219,7 @@ public class RideController {
         for (RideRequest rideRequest1 : rideRequests) {
             if (Objects.equals(rideRequest1.getUserCPF(), rideRequestDTO.getUserCPF())) {
                 rideRequestRepository.delete(rideRequest1);
+                break;
             }
         }
 
@@ -222,20 +228,40 @@ public class RideController {
 
     @GetMapping("/passengers/{ride_id}")
     public ResponseEntity<?> getRidePassengers(@PathVariable long ride_id) {
-        Optional<Ride> ride_opt = rideRepository.findById(ride_id);
+        List<PassengerDTO> passengers = rideRequestRepository.findByRideId(ride_id)
+                .stream()
+                .filter(rideRequest -> rideRequest.getRideId() == ride_id)
+                .filter(RideRequest::isAccepted)
+                .map(
+                        rideRequest -> {
+                            User user = userRepository.findByCpf(rideRequest.getUserCPF()).get();
+                            double rating = rideRatingRepository.findByUserTo(rideRequest.getUserCPF())
+                                    .stream()
+                                    .mapToInt(Rating::getRating)
+                                    .summaryStatistics().getAverage();
 
-        if (ride_opt.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+                            PassengerDTO passenger = new PassengerDTO();
+                            passenger.setAddress(rideRequest.getUserAddress());
+                            passenger.setPassengerName(user.getName());
+                            passenger.setRating(rating == 0 ? 5.0 : rating);
+                            passenger.setPassengerCPF(rideRequest.getUserCPF());
 
-        return ResponseEntity.ok().body(ride_opt.get().getPassengers());
+                            return passenger;
+                        }
+                )
+                .toList();
+//        Optional<Ride> ride_opt = rideRepository.findById(ride_id);
+//
+//        if (ride_opt.isEmpty()) {
+//            return ResponseEntity.notFound().build();
+//        }
+
+        return ResponseEntity.ok().body(passengers);
     }
 
     @GetMapping("/requests/{ride_id}")
     public ResponseEntity<?> getRequestsByRide(@PathVariable long ride_id) {
-        Optional<Ride> ride_opt = rideRepository.findById(ride_id);
-
-        if (ride_opt.isEmpty()) {
+        if (rideRepository.findById(ride_id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
@@ -265,26 +291,39 @@ public class RideController {
     }
 
     // Confirma que foi efetuado o pagamento da carona
-    @PutMapping("/confirmPayment/{rideID}/{driverCPF}")
-    ResponseEntity<?> confirmPayment(@PathVariable Long rideID, @PathVariable String driverCPF){
-        Optional<User> rideDriver = userRepository.findByCpf(driverCPF);
-        Optional<Ride> rideToConfirm = rideRepository.findById(rideID);
-
-        if (rideDriver.isEmpty())
-            return ResponseEntity.status(401).body("Motorista não encontrado");
-        if (rideToConfirm.isEmpty())
-            return ResponseEntity.status(401).body("Carona inexistente");
-
-        User driver = rideDriver.get();
-        Ride ride = rideToConfirm.get();
-
-        if (!ride.getDriver().equals(driver))
-            return ResponseEntity.badRequest().body("Motorista inválido");
-
-        ride.setRideComplete(true);
-        ride.setPaymentComplete(true);
-        rideRepository.save(ride);
+    @PutMapping("/confirmPayment/{rideID}/{passengerCPF}")
+    ResponseEntity<?> confirmPayment(@PathVariable Long rideID, @PathVariable String passengerCPF) {
+        rideRequestRepository.findByRideId(rideID)
+                .stream()
+                .filter(
+                        rideRequest -> Objects.equals(rideRequest.getUserCPF(), passengerCPF)
+                ).peek(
+                        rideRequest -> rideRequest.setPaid(true)
+                )
+                .forEach(
+                        rideRequest -> rideRequestRepository.save(rideRequest)
+                );
 
         return ResponseEntity.ok().build();
+
+//        Optional<User> rideDriver = userRepository.findByCpf(driverCPF);
+//        Optional<Ride> rideToConfirm = rideRepository.findById(rideID);
+//
+//        if (rideDriver.isEmpty())
+//            return ResponseEntity.status(401).body("Motorista não encontrado");
+//        if (rideToConfirm.isEmpty())
+//            return ResponseEntity.status(401).body("Carona inexistente");
+//
+//        User driver = rideDriver.get();
+//        Ride ride = rideToConfirm.get();
+//
+//        if (!ride.getDriver().equals(driver))
+//            return ResponseEntity.badRequest().body("Motorista inválido");
+//
+//        ride.setRideComplete(true);
+//        ride.setPaymentComplete(true);
+//        rideRepository.save(ride);
+//
+//        return ResponseEntity.ok().build();
     }    
 }

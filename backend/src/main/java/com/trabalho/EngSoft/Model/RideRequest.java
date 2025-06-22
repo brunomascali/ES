@@ -24,5 +24,14 @@ public class RideRequest {
     private String userCPF;
 
     @Column(nullable = false)
+    private String userName;
+
+    @Column(nullable = false)
     private String userAddress;
+
+    @Column(nullable = false)
+    private boolean accepted;
+
+    @Column(nullable = false)
+    private boolean paid;
 }

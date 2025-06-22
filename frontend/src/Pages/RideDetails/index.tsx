@@ -3,17 +3,17 @@ import { useParams } from "react-router-dom";
 import type { IRide } from "../../types/Ride";
 import TopMenu from "../../components/TopMenu";
 import Minimap from "../../components/Minimap";
-import { Calendar, Clock, DollarSign, Users, MapPin, FileText, Car } from "lucide-react";
+import { Clock, DollarSign, Users, MapPin, FileText, Car, CreditCard } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import RideRequests from "./RideRequests";
 import type { IRideRequest } from "../../types/RideRequest";
 import type { IDriverInfo } from "../../types/DriverInfo";
-import type { IPassenger } from "../../types/Passenger";
 import Passengers from "./Passengers";
 import RequestRideForm from "./RideRequestForm";
 import api from "../../services/api";
 import DayPicker from "../../components/DayPicker";
 import StarRating from "../../components/StarRating";
+import { Button } from "../../components/ui/button";
 
 export const Block = ({ title, children, icon }: { title: string, children: React.ReactNode, icon?: React.ReactNode }) => {
     return (
@@ -33,42 +33,33 @@ export default function RidePage() {
     const { user } = useAuth();
     const { id } = useParams<{ id: string }>();
     const [ride, setRide] = useState<IRide>();
-    const [rideRequest, setRideRequest] = useState<IRideRequest[]>([]);
     const [isPassenger, setIsPassenger] = useState(false);
     const [isDriver, setIsDriver] = useState(false);
     const [driverInfo, setDriverInfo] = useState<IDriverInfo | null>(null);
     const [driverRating, setDriverRating] = useState<number>(5.0);
     const [loading, setLoading] = useState(true);
+    const [paid, setPaid] = useState(false);
 
     useEffect(() => {
         const fetchRide = async () => {
             try {
                 const rideResponse = await api.get(`/rides/${id}`);
                 const driverInfoResponse = await api.get(`/driver/${rideResponse.data.driver.id}`);
-
-                if (rideResponse.status === 200 && driverInfoResponse.status === 200) {
-                    setRide(rideResponse.data as IRide);
-                    setDriverInfo(driverInfoResponse.data as IDriverInfo);
-                    setIsPassenger(rideResponse.data.passengers.some((passenger: IPassenger) => passenger.passenger.cpf === user?.cpf));
-                    setIsDriver(rideResponse.data.driver.cpf === user?.cpf);
-                } else {
-                    throw new Error("Erro ao buscar carona ou informações do motorista");
+                const requests = await api.get(`/rides/requests/${id}`);
+                const acceptedRequests = requests.data.filter((request: IRideRequest) => request.accepted);
+                setRide(rideResponse.data as IRide);
+                setDriverInfo(driverInfoResponse.data as IDriverInfo);
+                setIsDriver(rideResponse.data.driver.cpf === user?.cpf);
+                if (acceptedRequests.length > 0) {
+                    setIsPassenger(acceptedRequests.some((request: IRideRequest) => request.userCPF === user?.cpf));
+                    setPaid(acceptedRequests.some((request: IRideRequest) => request.userCPF === user?.cpf && request.paid));
                 }
-            } catch (error) {
-                console.error("Erro:", error);
-            } finally {
                 setLoading(false);
+            } catch (error) {
+                console.error(error);
             }
         };
         fetchRide();
-
-        const fetchRideRequests = async () => {
-            const response = await api.get(`/rides/requests/${id}`);
-            if (response.status === 200) {
-                setRideRequest(response.data as IRideRequest[]);
-            }
-        };
-        fetchRideRequests();
     }, []);
 
     useEffect(() => {
@@ -82,6 +73,14 @@ export default function RidePage() {
         };
         fetchDriverRating();
     }, [ride]);
+
+    const handleNotifyPayment = async () => {
+        const response = await api.put(`/rides/confirmPayment/${id}/${user?.cpf}`);
+        if (response.status === 200) {
+            alert("Pagamento confirmado com sucesso!");
+            setPaid(true);
+        }
+    };
 
     if (loading) {
         return (
@@ -169,14 +168,31 @@ export default function RidePage() {
 
                                 {isDriver && (
                                     <>
-                                        <Passengers ride={ride!} />
-                                        <RideRequests rideRequest={rideRequest} />
+                                        <Passengers rideId={Number(id)} />
+                                        <RideRequests rideId={Number(id)} />
                                     </>
                                 )}
 
                                 {!isPassenger && !isDriver && ride?.availableSeats! > 0 && (
                                     <RequestRideForm ride={ride!} />
                                 )}
+
+                                {
+                                    isPassenger && !paid && (
+                                        <Block title="Chave pix" icon={<CreditCard className="w-6 h-6 text-indigo-600 mt-1" />}>
+                                            <p className="text-lg font-semibold text-gray-900">
+                                                Chave pix: {ride?.driver.email} 
+                                            </p>
+                                            <Button
+                                            type="button"
+                                            className="cursor-pointer w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2"
+                                            onClick={() => handleNotifyPayment()}
+                                            >
+                                                Notificar pagamento
+                                            </Button>
+                                        </Block>
+                                    )
+                                }
 
                                 {/* {ride?.driver.name !== user?.name && !isPassenger ? (
                                     <RequestRideForm ride={ride} />

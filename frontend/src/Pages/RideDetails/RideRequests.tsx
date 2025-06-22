@@ -6,63 +6,33 @@ import { Block } from ".";
 import { useState, useEffect } from "react";
 import { getAveragePassengerRating } from "../../services/ratingService";
 
-export default function RideRequests({ rideRequest }: { rideRequest: IRideRequest[] }) {
-    const [pendingRequests, setPendingRequests] = useState(rideRequest);
-    const [passengerRatings, setPassengerRatings]   = useState<number[]>([]);
-    const [rating, setRating] = useState<number>(5);
-
+export default function RideRequests({ rideId }: { rideId: number }) {
+    const [pendingRequests, setPendingRequests] = useState<IRideRequest[]>([]);
+    const [ratings, setRatings] = useState<number[]>([]);
+    
     useEffect(() => {
-        const fetchPassengerRatings = async () => {
-            const ratings = await Promise.all(pendingRequests.map(request => getAveragePassengerRating(request.userCPF)));
-            setPassengerRatings(ratings);
+        const fetchRequests = async () => {
+            const requests = await api.get(`/rides/requests/${rideId}`);
+            setPendingRequests(requests.data.filter((request: IRideRequest) => !request.accepted));
+            const ratings = await Promise.all(requests.data.map((request: IRideRequest) => getAveragePassengerRating(request.userCPF)));
+            setRatings(ratings);
         };
-        fetchPassengerRatings();
-    }, [pendingRequests]);
+        fetchRequests();
+    }, [rideId]);
 
     const handleAcceptRide = async (rideId: string, userAddress: string, userCPF: string) => {
-        try {
-            const rideRequest: IRideRequest = {
-                rideId: rideId,
-                userCPF: userCPF,
-                userAddress: userAddress,
-            };
-            const response = await api.post(`http://127.0.0.1:8080/api/rides/acceptPassenger`, rideRequest);
-            if (response.status === 200) {
-                setPendingRequests(prev => prev.filter(req => req.userCPF !== userCPF));
-                alert("Carona aceita com sucesso!");
-            }
-        } catch (error) {
-            alert("Erro ao aceitar carona. Tente novamente.");
+        const response = await api.post(`/rides/acceptPassenger`, { rideId, userAddress, userCPF });
+        if (response.status === 200) {
+            alert("Carona aceita com sucesso!");
         }
-    }
+    };
 
     const handleRejectRide = async (rideId: string, userAddress: string, userCPF: string) => {
-        try {
-            const rideRequest: IRideRequest = {
-                rideId: rideId,
-                userCPF: userCPF,
-                userAddress: userAddress,
-            };
-            const response = await api.post(`http://127.0.0.1:8080/api/rides/rejectPassenger`, rideRequest);
-            if (response.status === 200) {
-                setPendingRequests(prev => prev.filter(req => req.userCPF !== userCPF));
-                alert("Carona rejeitada com sucesso!");
-            }
-        } catch (error) {
-            alert("Erro ao rejeitar carona. Tente novamente.");
+        const response = await api.post(`/rides/rejectPassenger`, { rideId, userAddress, userCPF });
+        if (response.status === 200) {
+            alert("Carona rejeitada com sucesso!");
         }
-    }
-
-    if (pendingRequests.length === 0) {
-        return (
-            <Block title="Solicitações de Carona" icon={<Users className="w-6 h-6 text-indigo-600 mt-1" />}>
-                <div className="bg-gray-50 rounded-lg p-6 text-center">
-                    <Users className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-600 font-medium">Nenhuma solicitação pendente</p>
-                </div>
-            </Block>
-        );
-    }
+    };
 
     return (
         <Block title="Solicitações de Carona" >
@@ -84,7 +54,11 @@ export default function RideRequests({ rideRequest }: { rideRequest: IRideReques
                                     </div>
                                 </div>
                                 <div>
-                                    <p className="text-sm">Avaliação: {passengerRatings[index]}</p>
+                                    <span className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
+                                        <span className={`${ratings[index] <= 3.5 ? 'text-red-500' : 'text-green-500'}`}>
+                                            Avaliação: {ratings[index] ? ratings[index] : "Não avaliado"}
+                                        </span>
+                                    </span>
                                 </div>
                             </div>
                             <div className="flex gap-3 mt-4">
