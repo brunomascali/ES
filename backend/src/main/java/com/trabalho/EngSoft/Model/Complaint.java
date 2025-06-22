@@ -18,10 +18,10 @@ public class Complaint {
     private Long id;
     
     @Column(nullable = false)
-    private Long user_id_from;
+    private String user_from;
 
     @Column(nullable = false)
-    private Long user_id_to;
+    private String user_to;
 
     @Column(nullable = false)
     private String description;

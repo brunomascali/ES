@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class CreateComplaintDTO {
-    private Long user_id_from;
-    private Long user_id_to;
+    private String user_from;
+    private String user_to;
     private String description;
 }

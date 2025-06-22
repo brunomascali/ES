@@ -66,6 +66,16 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/cpf/{cpf}")
+    public ResponseEntity<?> getUserByCpf(@PathVariable String cpf) {
+        Optional<User> user = userRepository.findByCpf(cpf);
+        if (user.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok().body(user.get());
+    }
+
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         if (userRepository.existsById(id)) {
@@ -119,20 +129,6 @@ public class UserController {
         emailService.SendVerificationCode(user.getEmail(), code);
 
         return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/ban/{id}")
-    public ResponseEntity<?> banUser(@PathVariable long id) {
-        Optional<User> user_opt = userRepository.findById(id);
-        if (user_opt.isPresent()) {
-            User user = user_opt.get();
-            user.setBanned(true);
-            userRepository.save(user);
-
-            return ResponseEntity.ok().build();
-        }
-
-        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/{userId}/ride-history") 

@@ -6,6 +6,7 @@ import StarRating from "../../components/StarRating";
 import { useAuth } from "../../hooks/useAuth";
 import type { IRideRequest } from "../../types/RideRequest";
 import { getAveragePassengerRating } from "../../services/ratingService";
+import { Button } from "../../components/ui/button";
 
 export default function Passengers({ rideId }: { rideId: number }) {
     const { user } = useAuth();
