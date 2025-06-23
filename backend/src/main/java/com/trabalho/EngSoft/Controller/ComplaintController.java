@@ -26,12 +26,6 @@ public class ComplaintController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private RideRequestRepository rideRequestRepository;
-
-    @Autowired
-    private RideRepository rideRepository;
-
     @GetMapping("")
     public List<Complaint> getComplaints() {
         return complaintRepository.findAll();

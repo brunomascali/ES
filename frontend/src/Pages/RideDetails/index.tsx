@@ -60,7 +60,7 @@ export default function RidePage() {
             }
         };
         fetchRide();
-    }, []);
+    }, [id]);
 
     useEffect(() => {
         const fetchDriverRating = async () => {
@@ -177,7 +177,7 @@ export default function RidePage() {
                                 )}
 
                                 {
-                                    isPassenger && (
+                                    isPassenger && !paid && (
                                         <Block title="Chave pix" icon={<CreditCard className="w-6 h-6 text-indigo-600 mt-1" />}>
                                             <p className="text-lg font-semibold text-gray-900">
                                                 Chave pix: {ride?.driver.email} 

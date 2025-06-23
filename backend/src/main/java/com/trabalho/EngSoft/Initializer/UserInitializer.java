@@ -38,41 +38,41 @@ public class UserInitializer implements CommandLineRunner {
             Role adminRole = roleRepository.findByRole(RoleName.ADMIN)
                     .orElseThrow(() -> new RuntimeException("Passenger DRIVER not found"));
 
-            User admin = new User();
-            admin.setName("Bruno Mascali Volkmer");
-            admin.setPassword("123");
-            admin.setEmail("bmvolkmer@inf.ufrgs.br");
-            admin.setCpf("11111111111");
-            admin.setDateOfBirth(dob);
-            admin.setRoles(Set.of(passengerRole, adminRole));
-            userRepository.save(admin);
+            User driver1 = new User();
+            driver1.setName("Motorista um");
+            driver1.setPassword("123");
+            driver1.setEmail("m1@ufrgs.br");
+            driver1.setCpf("11111111111");
+            driver1.setDateOfBirth(dob);
+            driver1.setRoles(Set.of(passengerRole));
+            userRepository.save(driver1);
 
-            User driver = new User();
-            driver.setName("Motorista da silva");
-            driver.setPassword("123");
-            driver.setEmail("motoristadasilva@inf.ufrgs.br");
-            driver.setCpf("22222222222");
-            driver.setDateOfBirth(dob);
-            driver.setRoles(Set.of(passengerRole));
-            userRepository.save(driver);
-
-            User passenger = new User();
-            passenger.setName("Maria da Silva");
-            passenger.setPassword("123");
-            passenger.setEmail("mariadasilva@ufrgs.br");
-            passenger.setCpf("33333333333");
-            passenger.setDateOfBirth(dob);
-            passenger.setRoles(Set.of(passengerRole));
-            userRepository.save(passenger);
+            User driver2 = new User();
+            driver2.setName("Motorista dois");
+            driver2.setPassword("123");
+            driver2.setEmail("m2@ufrgs.br");
+            driver2.setCpf("22222222222");
+            driver2.setDateOfBirth(dob);
+            driver2.setRoles(Set.of(passengerRole));
+            userRepository.save(driver2);
 
             User passenger2 = new User();
-            passenger2.setName("Roberto da Silva");
+            passenger2.setName("Passageiro um");
             passenger2.setPassword("123");
-            passenger2.setEmail("robertodasilva@ufrgs.br");
-            passenger2.setCpf("44444444444");
+            passenger2.setEmail("p1@ufrgs.br");
+            passenger2.setCpf("33333333333");
             passenger2.setDateOfBirth(dob);
             passenger2.setRoles(Set.of(passengerRole));
             userRepository.save(passenger2);
+
+            User admin = new User();
+            admin.setName("admin");
+            admin.setPassword("123");
+            admin.setEmail("admin@ufrgs.br");
+            admin.setCpf("44444444444");
+            admin.setDateOfBirth(dob);
+            admin.setRoles(Set.of(passengerRole, adminRole));
+            userRepository.save(admin);
         }
     }
 }

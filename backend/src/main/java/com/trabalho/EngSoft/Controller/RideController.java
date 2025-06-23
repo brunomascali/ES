@@ -1,9 +1,7 @@
 package com.trabalho.EngSoft.Controller;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import com.trabalho.EngSoft.DTO.PassengerDTO;
 import com.trabalho.EngSoft.Model.*;
@@ -32,7 +30,7 @@ public class RideController {
     private RideRequestRepository rideRequestRepository;
 
     @Autowired
-    private RatingRepository rideRatingRepository;
+    private RatingRepository RatingRepository;
 
     // Lista todas as caronas para teste
     @GetMapping("")
@@ -78,8 +76,8 @@ public class RideController {
         User driver = user.get();
     
         // Checa se o motorista possui uma carona ainda ativa
-        if (!rideRepository.findByDriverAndRideComplete(driver, false).isEmpty())
-            return ResponseEntity.badRequest().body("Motorista possui uma carona ativa"); 
+        //if (!rideRepository.findByDriverAndRideComplete(driver, false).isEmpty())
+            //return ResponseEntity.badRequest().body("Motorista possui uma carona ativa");
         
         Ride newRide = new Ride();
 
@@ -235,7 +233,7 @@ public class RideController {
                 .map(
                         rideRequest -> {
                             User user = userRepository.findByCpf(rideRequest.getUserCPF()).get();
-                            double rating = rideRatingRepository.findByUserTo(rideRequest.getUserCPF())
+                            double rating = RatingRepository.findByUserTo(rideRequest.getUserCPF())
                                     .stream()
                                     .mapToInt(Rating::getRating)
                                     .summaryStatistics().getAverage();
@@ -260,7 +258,7 @@ public class RideController {
     }
 
     @GetMapping("/requests/{ride_id}")
-    public ResponseEntity<?> getRequestsByRide(@PathVariable long ride_id) {
+    public ResponseEntity<?> getRideRequests(@PathVariable long ride_id) {
         if (rideRepository.findById(ride_id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }

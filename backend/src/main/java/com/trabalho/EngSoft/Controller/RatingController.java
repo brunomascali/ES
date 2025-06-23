@@ -55,7 +55,6 @@ public class RatingController {
         return avgRating.getAsDouble();
     }
 
-
     // Média de avaliação de um motorista
     @GetMapping("/avg/driver/{user_cpf}")
     public Double getDriverAverageRating(@PathVariable String user_cpf) {

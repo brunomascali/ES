@@ -6,7 +6,7 @@ import { DriverSignupStatus } from "../../types/enums/DriverSignupStatus";
 import type { ValidateCnhRequest } from "../../types/requests";
 import { handleCnhVerification } from "../../services/driverService";
 
-export default function DriverSignup() {
+export default function DriverRegistration() {
     const { user, setUser } = useAuth();
     const [cnhRequest, setCnhRequest] = useState<ValidateCnhRequest>({
         cnh: "11111111111",

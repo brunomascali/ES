@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface RideRequestRepository extends JpaRepository<RideRequest, Long> {
-    public List<RideRequest> findByRideId(Long rideId);
+    List<RideRequest> findByRideId(Long rideId);
 }

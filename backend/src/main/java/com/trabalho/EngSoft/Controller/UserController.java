@@ -1,6 +1,6 @@
 package com.trabalho.EngSoft.Controller;
 
-import com.trabalho.EngSoft.DTO.SignupRequestDTO;
+import com.trabalho.EngSoft.DTO.CreateUserDTO;
 import com.trabalho.EngSoft.DTO.RideHistoryItemDTO;
 import com.trabalho.EngSoft.Model.Role;
 import com.trabalho.EngSoft.Model.Enums.RoleName;
@@ -98,7 +98,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createUser(@RequestBody SignupRequestDTO signupRequest) {
+    public ResponseEntity<?> createUser(@RequestBody CreateUserDTO signupRequest) {
         // A verificação da checagem de email já está implementada na função de verificação
         // ela pode ser excluída do signUp, assim que a verificação for implementada no frontend
         if (userRepository.findByEmail(signupRequest.getEmail()).isPresent()) {

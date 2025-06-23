@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "../Pages/Home";
 import Rides from "../Pages/Rides";
-import DriverSignup from "../Pages/DriverSignup";
-import OfferRide from "../Pages/OfferRide";
+import DriverRegistration from "../Pages/DriverRegistration";
+import RideCreation from "../Pages/RideCreation";
 import Complaints from "../Pages/Complaints";
 import RidePage from "../Pages/RideDetails";
 import Profile from "../Pages/Profile";
@@ -29,9 +29,9 @@ export default function OtherRoutes() {
 
                 { isVerified && ( <Route path="/caronas" element={<Rides />} /> ) }
 
-                { !isDriver && ( <Route path="/cadastro-motorista" element={<DriverSignup />} />) }
+                { !isDriver && ( <Route path="/cadastro-motorista" element={<DriverRegistration />} />) }
 
-                { isDriver && ( <Route path="/oferecer-carona" element={<OfferRide />} />) }
+                { isDriver && ( <Route path="/oferecer-carona" element={<RideCreation />} />) }
             </Routes>
         </BrowserRouter>
     );

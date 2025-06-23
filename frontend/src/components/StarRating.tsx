@@ -31,6 +31,7 @@ export default function StarRating({ cpf_from, cpf_to, is_driver_rating }: { cpf
                     className="cursor-pointer  bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-2 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
                     onClick={() => {
                         createRating(rating);
+                        alert("Avaliação enviada com sucesso");
                     }}
                 >
                     Avaliar
@@ -44,6 +45,7 @@ export default function StarRating({ cpf_from, cpf_to, is_driver_rating }: { cpf
                         user_to: cpf_to,
                         description: rating.description,
                     });
+                    alert("Denúncia enviada com sucesso");
                 }}
                 >
                     Denunciar usuário

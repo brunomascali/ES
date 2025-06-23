@@ -23,8 +23,8 @@ public class CRLVInitializer implements CommandLineRunner {
 
             CRLV c2 = new CRLV();
             c2.setPlate("ABC5678");
-            c2.setExpiration(LocalDate.of(2020, 12, 31));
-            crlvRepository.save(c1);
+            c2.setExpiration(LocalDate.of(2025, 12, 31));
+            crlvRepository.save(c2);
         }
     }
 }

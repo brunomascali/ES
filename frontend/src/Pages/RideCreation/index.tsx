@@ -6,7 +6,7 @@ import { getCoordinates } from "../../services/coordinatesService";
 import api from "../../services/api";
 import DayPicker from "../../components/DayPicker";
 
-export default function OfferRide() {
+export default function RideCreation() {
     const { user } = useAuth();
     const [offerRideData, setOfferRideData] = useState<OfferRideData>({
         driverCPF: user?.cpf || "",
@@ -103,7 +103,7 @@ export default function OfferRide() {
                             </div>
                             <div>
                                 <label htmlFor="time" className="block text-lg font-medium text-gray-700 mb-2">
-                                    Horário
+                                    Horário de chegada
                                 </label>
                                 <input
                                     required

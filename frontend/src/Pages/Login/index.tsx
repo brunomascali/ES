@@ -8,7 +8,7 @@ import type { IUser } from "../../types/User";
 
 export default function Login() {
     const context = useAuth();
-    const [input, setInput] = useState({ email: 'bmvolkmer@inf.ufrgs.br', password: '123' });
+    const [input, setInput] = useState({ email: 'm1@ufrgs.br', password: '123' });
     const [invalidLogin, setInvalidLogin] = useState(false);
     const [banned, setBanned] = useState(false);
 

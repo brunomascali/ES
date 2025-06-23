@@ -17,7 +17,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/verify")
 @CrossOrigin(origins = "*")
-public class VerificationController {
+public class EmailVerificationController {
     @Autowired
     private VerificationCodesRepository verificationCodesRepository;
     @Autowired
@@ -27,12 +27,12 @@ public class VerificationController {
 
     private final EmailService emailService;
 
-    public VerificationController(EmailService emailService) {
+    public EmailVerificationController(EmailService emailService) {
         this.emailService = emailService;
     }
 
     @PostMapping("/{code}")
-    private ResponseEntity<?> verify(@PathVariable String code) {
+    private ResponseEntity<?> verifyEmail(@PathVariable String code) {
         Optional<VerificationCode> verificationCode_opt = verificationCodesRepository.findByCode(code);
 
         if (verificationCode_opt.isEmpty()) {
@@ -59,7 +59,7 @@ public class VerificationController {
     }
 
     @PostMapping("/resend/{email}")
-    private ResponseEntity<?> verifyResend(@PathVariable String email) {
+    private ResponseEntity<?> resendEmail(@PathVariable String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User to send resend email not found"));
 

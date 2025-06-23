@@ -11,6 +11,7 @@ import { getAverageDriverRating } from "../services/ratingService";
 export default function RideCard(ride: IRide) {
     const { user } = useAuth();
     const [isPassenger, setIsPassenger] = useState(false);
+    const isDriver = ride.driver.cpf === user?.cpf;
     const [driverRating, setDriverRating] = useState<number>(5.0);
 
     console.log(ride);
@@ -29,11 +30,17 @@ export default function RideCard(ride: IRide) {
                 <div className="flex flex-col lg:flex-row gap-8">
                     <div className="flex-1 space-y-6">
                         <div className="flex items-center justify-start gap-2">
+                            {isDriver ? (
+                                <span className="bg-green-200 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                                    Você é Motorista
+                                </span>
+                            ) : (
+                                <span className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
+                                    Motorista: {ride.driver.name}
+                                </span>
+                            )}
                             <span className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
-                                Motorista: {ride.driver.name}
-                            </span>
-                            <span className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
-                                Avaliação do Motorista: {driverRating}
+                                Avaliação do Motorista: {driverRating.toFixed(2)}
                             </span>
                             <span className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
                                 {ride.availableSeats} {ride.availableSeats === 1 ? 'vaga' : 'vagas'}
@@ -41,11 +48,6 @@ export default function RideCard(ride: IRide) {
                             {isPassenger && (
                                 <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
                                     Você é Passageiro
-                                </span>
-                            )}
-                            {isDriver(user) && (
-                                <span className="bg-green-200 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
-                                    Você é Motorista
                                 </span>
                             )}
                         </div>
@@ -74,7 +76,7 @@ export default function RideCard(ride: IRide) {
                             </Block>
                         </div>
 
-                        <button 
+                        <button
                             onClick={() => window.location.href = `/caronas/${ride.id}`}
                             className="cursor-pointer w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2"
                         >

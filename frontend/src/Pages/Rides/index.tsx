@@ -4,14 +4,20 @@ import { useEffect, useState } from "react";
 import { Users } from "lucide-react";
 import type { IRide } from "../../types/Ride";
 import api from "../../services/api";
+import { getAverageDriverRating } from "../../services/ratingService";
 
 export default function Rides() {
     const [rides, setRides] = useState<IRide[]>([]);
     const [isPassenger, setIsPassenger] = useState(false);
     const [loading, setLoading] = useState(true);
 
+    const [searchDriverName, setSearchDriverName] = useState("");
+    const [searchMinRating, setSearchMinRating] = useState(5);
+
+    const [searchResults, setSearchResults] = useState<IRide[]>([]);
+
     useEffect(() => {
-        const fetchRides = async() => {
+        const fetchRides = async () => {
             try {
                 const ridesResponse = await api.get("/rides");
                 if (ridesResponse.status == 200) {
@@ -22,6 +28,7 @@ export default function Rides() {
                         arrivalTime: ride['arrivalTime']
                     }));
                     setRides(rides);
+                    setSearchResults(rides);
                 }
             } catch (error) {
             } finally {
@@ -30,6 +37,25 @@ export default function Rides() {
         }
         fetchRides();
     }, []);
+
+    const handleSearch = async () => {
+        if (searchDriverName.length > 0) {
+            setSearchResults(rides.filter((ride) => ride.driver.name.toLowerCase().includes(searchDriverName.toLowerCase())));
+        } else {
+            setSearchResults(rides);
+        }
+
+        if (searchMinRating > 0) {
+            setSearchResults(searchResults.filter((ride) => {
+                getAverageDriverRating(ride.driver.cpf).then((rating) => {
+                    console.log(rating, ">=", searchMinRating);
+                    return rating >= searchMinRating;
+                });
+            }));
+        } else {
+            setSearchResults(searchResults);
+        }
+    }
 
     if (loading) {
         return (
@@ -60,8 +86,38 @@ export default function Rides() {
                             {rides.length} {rides.length === 1 ? 'carona encontrada' : 'caronas encontradas'}
                         </p>
                     </div>
-                    
-                    {rides.length === 0 ? (
+
+                    <div className="flex items-center justify-center mb-8 w-full">
+                        <div className="flex items-center gap-4 flex-col w-full">
+                            <h1 className="text-lg text-gray-600 mr-4">Buscar por:</h1>
+                            <label htmlFor="searchDriverName">Nome do motorista</label>
+                            <input
+                                type="text"
+                                placeholder="Buscar por nome do motorista"
+                                className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 mr-4"
+                                value={searchDriverName}
+                                onChange={(e) => setSearchDriverName(e.target.value)}
+                            />
+                            <label htmlFor="searchMinRating">Avaliação mínima</label>
+                            <input
+                                type="number"
+                                placeholder="Buscar por avaliação mínima"
+                                className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 mr-4"
+                                min={0}
+                                max={5}
+                                value={searchMinRating}
+                                onChange={(e) => setSearchMinRating(Number(e.target.value))}
+                            />
+                            <button
+                                type="button"
+                                className="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200"
+                                onClick={handleSearch}
+                            >Buscar</button>
+                        </div>
+                    </div>
+
+
+                    {searchResults.length === 0 ? (
                         <div className="bg-white rounded-lg shadow-md p-12">
                             <div className="text-center">
                                 <div className="bg-gray-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
@@ -77,8 +133,8 @@ export default function Rides() {
                         </div>
                     ) : (
                         <div className="space-y-6">
-                            {rides.map((ride) => (
-                                <RideCard 
+                            {searchResults.map((ride) => (
+                                <RideCard
                                     key={ride.id}
                                     id={ride.id}
                                     driver={ride.driver}
