@@ -46,12 +46,11 @@ export default function Rides() {
         }
 
         if (searchMinRating > 0) {
-            setSearchResults(searchResults.filter((ride) => {
-                getAverageDriverRating(ride.driver.cpf).then((rating) => {
-                    console.log(rating, ">=", searchMinRating);
-                    return rating >= searchMinRating;
-                });
-            }));
+            const ratings = await Promise.all(
+                rides.map(ride => getAverageDriverRating(ride.driver.cpf))
+            );
+            const filteredRides = rides.filter((ride, idx) => ratings[idx] >= searchMinRating);
+            setSearchResults(filteredRides);
         } else {
             setSearchResults(searchResults);
         }
