@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.trabalho.EngSoft.DTO.DriverValidationDTO;
 import com.trabalho.EngSoft.Model.CNH;
 import com.trabalho.EngSoft.Model.CRLV;
-import com.trabalho.EngSoft.Model.DriverInfo;
+import com.trabalho.EngSoft.Model.Driver;
 import com.trabalho.EngSoft.Model.Enums.RoleName;
 import com.trabalho.EngSoft.Model.Role;
 import com.trabalho.EngSoft.Model.User;
@@ -65,12 +65,12 @@ public class DriverController {
                 user.getRoles().add(driverRole);
                 userRepository.save(user);
 
-                DriverInfo driverInfo = new DriverInfo();
-                driverInfo.setDriver(user);
-                driverInfo.setPlate(driverValidationDTO.getPlate());
-                driverInfo.setColor(driverValidationDTO.getColor());
-                driverInfo.setModel(driverValidationDTO.getModel());
-                driverInfoRepository.save(driverInfo);
+                Driver driver = new Driver();
+                driver.setDriver(user);
+                driver.setPlate(driverValidationDTO.getPlate());
+                driver.setColor(driverValidationDTO.getColor());
+                driver.setModel(driverValidationDTO.getModel());
+                driverInfoRepository.save(driver);
 
                 return ResponseEntity.ok().build();
             }
@@ -81,7 +81,7 @@ public class DriverController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getDriverInfo(@PathVariable Long id) {
-        Optional<DriverInfo> driverInfo_opt = driverInfoRepository.findByDriverId(id);
+        Optional<Driver> driverInfo_opt = driverInfoRepository.findByDriverId(id);
 
         if (driverInfo_opt.isPresent()) {
             return ResponseEntity.ok().body(driverInfo_opt.get());

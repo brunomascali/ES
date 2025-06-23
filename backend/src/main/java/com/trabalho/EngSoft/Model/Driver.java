@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "drivers_info")
-public class DriverInfo {
+public class Driver {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
