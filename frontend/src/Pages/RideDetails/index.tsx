@@ -81,6 +81,13 @@ export default function RidePage() {
         }
     };
 
+    const handleCancelRide = async () => {
+        const response = await api.delete(`/rides/${id}`);
+        if (response.status === 200) {
+            alert("Carona cancelada com sucesso!");
+        }
+    };
+
     if (loading) {
         return (
             <div>
@@ -115,6 +122,17 @@ export default function RidePage() {
                         {isPassenger && (
                             <StarRating cpf_from={user!.cpf} cpf_to={ride?.driver.cpf!} is_driver_rating={true} />
                         )}
+                        {
+                            isDriver && (
+                                <Button 
+                                type="button" 
+                                className="mt-4 cursor-pointer bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2" 
+                                onClick={() => handleCancelRide()}
+                                >
+                                    Cancelar Carona
+                                </Button>
+                            )
+                        }
                     </div>
 
                     <div className="bg-white rounded-lg shadow-md p-8">

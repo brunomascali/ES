@@ -7,6 +7,7 @@ import { useAuth } from "../../hooks/useAuth";
 import type { IRideRequest } from "../../types/RideRequest";
 import { getAveragePassengerRating } from "../../services/ratingService";
 import { Button } from "../../components/ui/button";
+import type { IDeletePassenger } from "../../types/Passenger";
 
 export default function Passengers({ rideId }: { rideId: number }) {
     const { user } = useAuth();
@@ -36,6 +37,17 @@ export default function Passengers({ rideId }: { rideId: number }) {
 
         fetchRequests();
     }, [rideId]);
+
+    const handleRemovePassenger = async (passengerCpf: string) => {
+        const deletePassengerDTO: IDeletePassenger = {
+            rideId: Number(rideId),
+            passengerCpf: passengerCpf
+        }
+        const response = await api.delete(`/rides/deletePassenger`, { data: deletePassengerDTO });
+        if (response.status === 200) {
+            alert("Passageiro removido com sucesso!");
+        }
+    };
 
     if (!passengers.length) {
         return (
@@ -92,6 +104,12 @@ export default function Passengers({ rideId }: { rideId: number }) {
                                     cpf_to={passenger.userCPF}
                                     is_driver_rating={false}
                                 />
+                                <Button type="button"
+                                    className="mt-4 cursor-pointer bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2"
+                                    onClick={() => handleRemovePassenger(passenger.userCPF)}
+                                    >
+                                        Excluir passageiro
+                                    </Button>
                             </div>
                         </div>
                     </li>

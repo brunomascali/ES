@@ -4,3 +4,8 @@ export interface IPassenger {
     address: string;
     rating: number;
 };
+
+export interface IDeletePassenger {
+    rideId: number;
+    passengerCpf: string;
+}

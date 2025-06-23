@@ -3,6 +3,7 @@ package com.trabalho.EngSoft.Controller;
 import java.time.LocalTime;
 import java.util.*;
 
+import com.trabalho.EngSoft.DTO.DeletePassengerDTO;
 import com.trabalho.EngSoft.DTO.PassengerDTO;
 import com.trabalho.EngSoft.Model.*;
 import com.trabalho.EngSoft.Repository.RatingRepository;
@@ -220,6 +221,18 @@ public class RideController {
                 break;
             }
         }
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/deletePassenger")
+    public ResponseEntity<?> deletePassenger(@RequestBody DeletePassengerDTO deletePassengerDTO) {
+        List<RideRequest> ride_opt = rideRequestRepository.findByRideId(deletePassengerDTO.getRideId());
+
+        ride_opt
+                .stream()
+                .filter(rideRequest -> Objects.equals(deletePassengerDTO.getPassengerCpf(), rideRequest.getUserCPF()))
+                .forEach(rideRequest -> rideRequestRepository.delete(rideRequest));
 
         return ResponseEntity.ok().build();
     }
