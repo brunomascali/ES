@@ -126,7 +126,9 @@ public class UserController {
         verification_code.setUser(user);
         verificationCodesRepository.save(verification_code);
 
-        emailService.SendVerificationCode(user.getEmail(), code);
+        Thread thread = new Thread(() -> emailService.SendVerificationCode(user.getEmail(), code));
+        thread.setDaemon(true);
+        thread.start();
 
         return ResponseEntity.ok().build();
     }
