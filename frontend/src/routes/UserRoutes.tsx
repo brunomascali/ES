@@ -18,21 +18,25 @@ export default function OtherRoutes() {
 
     return (
         <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/caronas/:id" element={<RidePage />} />
-                <Route path="/perfil" element={<Profile />} />
+            { !isVerified ?
+                <Routes>
+                    <Route path="/" element={<VerifyEmail />} />
+                </Routes>
+                :
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/caronas/:id" element={<RidePage />} />
+                    <Route path="/perfil" element={<Profile />} />
 
-                { isAdmin && ( <Route path="/denuncias" element={<Complaints />} /> ) }
+                    {isAdmin && (<Route path="/denuncias" element={<Complaints />} />)}
 
-                { !isVerified && ( <Route path="/verificar-email" element={<VerifyEmail />} /> ) }
+                    {isVerified && (<Route path="/caronas" element={<Rides />} />)}
 
-                { isVerified && ( <Route path="/caronas" element={<Rides />} /> ) }
+                    {!isDriver && (<Route path="/cadastro-motorista" element={<DriverRegistration />} />)}
 
-                { !isDriver && ( <Route path="/cadastro-motorista" element={<DriverRegistration />} />) }
-
-                { isDriver && ( <Route path="/oferecer-carona" element={<RideCreation />} />) }
-            </Routes>
+                    {isDriver && (<Route path="/oferecer-carona" element={<RideCreation />} />)}
+                </Routes>
+            }
         </BrowserRouter>
     );
 }
