@@ -39,20 +39,17 @@ export default function Rides() {
     }, []);
 
     const handleSearch = async () => {
+        setSearchResults(rides);
         if (searchDriverName.length > 0) {
             setSearchResults(rides.filter((ride) => ride.driver.name.toLowerCase().includes(searchDriverName.toLowerCase())));
-        } else {
-            setSearchResults(rides);
         }
 
-        if (searchMinRating > 0) {
+        else if (searchMinRating > 0) {
             const ratings = await Promise.all(
-                rides.map(ride => getAverageDriverRating(ride.driver.cpf))
+                searchResults.map(ride => getAverageDriverRating(ride.driver.cpf))
             );
-            const filteredRides = rides.filter((ride, idx) => ratings[idx] >= searchMinRating);
+            const filteredRides = searchResults.filter((ride, idx) => ratings[idx] >= searchMinRating);
             setSearchResults(filteredRides);
-        } else {
-            setSearchResults(searchResults);
         }
     }
 
