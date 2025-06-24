@@ -35,15 +35,6 @@ export default function TopMenu() {
                             Caronas
                         </a>
                     )}
-                    <a
-                        href="#"
-                        className={`px-3 py-2 rounded-md text-lg font-medium transition-colors ${activePage === 'perfil'
-                            ? 'bg-indigo-600 text-white'
-                            : 'text-gray-700 hover:bg-indigo-100 hover:text-indigo-700'
-                            }`}
-                    >
-                        Perfil
-                    </a>
                     {user?.roles.includes("DRIVER") && (
                         <a
                             href="/oferecer-carona"
